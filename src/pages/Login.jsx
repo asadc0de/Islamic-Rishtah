@@ -14,6 +14,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [signingIn, setSigningIn] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,22 +22,20 @@ const Login = () => {
       toast.error("Please enter both email and password");
       return;
     }
+    setSigningIn(true);
     try {
       console.log("Attempting login...");
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       console.log("Login successful, user:", user.uid);
-      
       // Fetch user data from Realtime Database
       const userRef = ref(realtimeDb, 'users/' + user.uid);
       const snapshot = await get(userRef);
-      
       if (snapshot.exists()) {
         const userData = snapshot.val();
         console.log("User data from Realtime DB:", userData);
         // Store user data in localStorage for app use
         localStorage.setItem('loggedInUser', JSON.stringify(userData));
-        
         // Save basic user info to profile in Realtime Database
         const profileData = {
           username: userData.username || '',
@@ -45,18 +44,15 @@ const Login = () => {
           lastLogin: new Date().toISOString(),
           loginCount: (userData.loginCount || 0) + 1
         };
-        
         // Update user data with profile info
         await set(ref(realtimeDb, 'users/' + user.uid), {
           ...userData,
           ...profileData
         });
-        
         console.log("Profile data saved:", profileData);
       } else {
         console.log("No user data found in Realtime DB");
       }
-      
       toast.success("Login successful!");
       console.log("Redirecting to dashboard...");
       navigate("/dashboard");
@@ -67,6 +63,8 @@ const Login = () => {
       } else {
         toast.error(error.message);
       }
+    } finally {
+      setSigningIn(false);
     }
   };
 
@@ -200,9 +198,10 @@ const Login = () => {
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-3 px-4 border border-transparent text-base font-semibold rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200 shadow-sm"
+                className="w-full flex justify-center py-3 px-4 border border-transparent text-base font-semibold rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200 shadow-sm disabled:opacity-60"
+                disabled={signingIn}
               >
-                Sign In
+                {signingIn ? 'Signing in...' : 'Sign In'}
               </button>
             </div>
 

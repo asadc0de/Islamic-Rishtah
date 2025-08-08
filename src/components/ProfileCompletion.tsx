@@ -52,7 +52,8 @@ export const ProfileCompletion: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 4;
   const navigate = useNavigate();
-  
+  const [showErrors, setShowErrors] = useState(false);
+
   const [formData, setFormData] = useState<FormData>({
     personalInfo: {
       firstName: '',
@@ -98,15 +99,26 @@ export const ProfileCompletion: React.FC = () => {
 
   // Validation functions for each step
   const validatePersonalInfo = (data: FormData['personalInfo']) => {
-    return (
-      data.firstName &&
-      data.lastName &&
-      data.dateOfBirth &&
-      data.gender &&
-      data.aboutMe &&
-      data.expectations &&
-      data.healthConditions
-    );
+    if (!data.firstName || !data.lastName || !data.dateOfBirth || !data.gender || !data.aboutMe || !data.expectations || !data.healthConditions) {
+      return false;
+    }
+    // Age validation
+    const dob = new Date(data.dateOfBirth);
+    const today = new Date();
+    const age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+    const day = today.getDate() - dob.getDate();
+    let is18 = age > 18 || (age === 18 && (m > 0 || (m === 0 && day >= 0)));
+    if (!is18) {
+      toast.error('You are under 18. You cannot create an account.');
+      return false;
+    }
+    // Prevent future dates
+    if (dob > today) {
+      toast.error('Date of birth cannot be in the future.');
+      return false;
+    }
+    return true;
   };
   const validateReligiousInfo = (data: FormData['religiousInfo']) => {
     return (
@@ -139,20 +151,23 @@ export const ProfileCompletion: React.FC = () => {
   };
 
   const handleNext = () => {
+    let valid = true;
     if (currentStep === 1 && !validatePersonalInfo(formData.personalInfo)) {
       toast.error('Please complete all required fields in Personal Info.');
-      return;
+      valid = false;
     }
     if (currentStep === 2 && !validateReligiousInfo(formData.religiousInfo)) {
       toast.error('Please complete all required fields in Religious Info.');
-      return;
+      valid = false;
     }
     if (currentStep === 3 && !validateFamilyBackground(formData.familyBackground)) {
       toast.error('Please complete all required fields in Family & Background.');
-      return;
+      valid = false;
     }
-    if (currentStep < totalSteps) {
+    setShowErrors(!valid);
+    if (valid && currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
+      setShowErrors(false);
     }
   };
 
@@ -163,26 +178,29 @@ export const ProfileCompletion: React.FC = () => {
   };
 
   const handleCompleteProfile = async () => {
+    let valid = true;
     if (!validatePersonalInfo(formData.personalInfo)) {
       toast.error('Please complete all required fields in Personal Info.');
       setCurrentStep(1);
-      return;
+      valid = false;
     }
     if (!validateReligiousInfo(formData.religiousInfo)) {
       toast.error('Please complete all required fields in Religious Info.');
       setCurrentStep(2);
-      return;
+      valid = false;
     }
     if (!validateFamilyBackground(formData.familyBackground)) {
       toast.error('Please complete all required fields in Family & Background.');
       setCurrentStep(3);
-      return;
+      valid = false;
     }
     if (!validateCareerEducation(formData.careerEducation)) {
       toast.error('Please complete all required fields in Career & Education.');
       setCurrentStep(4);
-      return;
+      valid = false;
     }
+    setShowErrors(!valid);
+    if (!valid) return;
     const user = auth.currentUser;
     if (!user) {
       toast.error('No authenticated user found.');
@@ -195,7 +213,6 @@ export const ProfileCompletion: React.FC = () => {
         profileCompleted: true,
         profileCompletedAt: new Date().toISOString()
       });
-      
       toast.success('Profile saved successfully!');
       setTimeout(() => navigate('/dashboard'), 1200);
     } catch (error: any) {
@@ -210,6 +227,7 @@ export const ProfileCompletion: React.FC = () => {
           <PersonalInfoStep
             data={formData.personalInfo}
             onChange={(data) => updateFormData('personalInfo', data)}
+            showErrors={showErrors}
           />
         );
       case 2:
@@ -217,6 +235,7 @@ export const ProfileCompletion: React.FC = () => {
           <ReligiousInfoStep
             data={formData.religiousInfo}
             onChange={(data) => updateFormData('religiousInfo', data)}
+            showErrors={showErrors}
           />
         );
       case 3:
@@ -224,6 +243,7 @@ export const ProfileCompletion: React.FC = () => {
           <FamilyBackgroundStep
             data={formData.familyBackground}
             onChange={(data) => updateFormData('familyBackground', data)}
+            showErrors={showErrors}
           />
         );
       case 4:
@@ -231,6 +251,7 @@ export const ProfileCompletion: React.FC = () => {
           <CareerEducationStep
             data={formData.careerEducation}
             onChange={(data) => updateFormData('careerEducation', data)}
+            showErrors={showErrors}
           />
         );
       default:
@@ -239,15 +260,15 @@ export const ProfileCompletion: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-pink-50 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-center text-gray-900 mb-4">
+    <div className="min-h-screen bg-pink-50 py-6 px-2 sm:px-4 md:py-8">
+      <div className="w-full max-w-lg sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-[48%] mx-auto bg-white rounded-lg shadow-sm p-4 sm:p-6 md:p-8">
+        <h1 className="text-lg sm:text-xl font-bold text-center text-gray-900 mb-4">
           Complete Your Profile
         </h1>
-        
+
         <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
         <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
-        
+
         <TabNavigation
           currentStep={currentStep}
           onTabClick={setCurrentStep}
@@ -255,11 +276,11 @@ export const ProfileCompletion: React.FC = () => {
 
         {renderCurrentStep()}
 
-        <div className="flex justify-between items-center mt-8">
+        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mt-8 gap-3">
           <button
             onClick={handlePrevious}
             disabled={currentStep === 1}
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors ${
+            className={`flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-colors w-full sm:w-auto ${
               currentStep === 1
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -271,7 +292,7 @@ export const ProfileCompletion: React.FC = () => {
 
           <button
             onClick={currentStep === totalSteps ? handleCompleteProfile : handleNext}
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors ${
+            className={`flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-colors w-full sm:w-auto ${
               currentStep === totalSteps
                 ? 'bg-green-600 text-white hover:bg-green-700'
                 : 'bg-red-600 text-white hover:bg-red-700'

@@ -33,13 +33,13 @@ const Header = () => {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="#howitworks" className="text-gray-600 hover:text-gray-900 transition-colors">
+            <a href="#howitworks" className="text-gray-600 hover:text-gray-900 transition-colors cursor-pointer">
               How It Works
             </a>
-            <Link to='/login' className="text-red-500 hover:text-red-600 transition-colors font-medium">
+            <Link to='/login' className="text-red-500 hover:text-red-600 transition-colors font-medium cursor-pointer">
               Login
             </Link>
-            <Link to='/signup' className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-md font-medium transition-colors">
+            <Link to='/signup' className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-md font-medium transition-colors cursor-pointer">
               Sign Up
             </Link>
           </nav>
@@ -48,7 +48,7 @@ const Header = () => {
           <div className="md:hidden">
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="text-gray-700 focus:outline-none"
+              className="text-gray-700 focus:outline-none cursor-pointer"
             >
               {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>

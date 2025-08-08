@@ -120,6 +120,14 @@ const SearchPage = () => {
   const [profiles, setProfiles] = useState([]);
   const [filteredProfiles, setFilteredProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState(null);
+  // Get current user ID on mount
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setCurrentUserId(user ? user.uid : null);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const sortOptions = [
     "Newest First",
@@ -267,6 +275,10 @@ const SearchPage = () => {
   // Filter profiles based on search criteria
   useEffect(() => {
     let filtered = [...profiles];
+    // Remove current user's own profile from search results
+    if (currentUserId) {
+      filtered = filtered.filter(profile => profile.id !== currentUserId);
+    }
     console.log('Starting with profiles:', filtered.length);
 
     // Search query filter
@@ -565,9 +577,9 @@ const SearchPage = () => {
       <AuthenticatedHeader />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex gap-8">
-          {/* Sidebar */}
-          <div className="w-80 flex-shrink-0">
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Sidebar / Filters */}
+          <div className="w-full md:w-80 flex-shrink-0 mb-8 md:mb-0">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-lg font-semibold text-gray-900">
@@ -673,7 +685,7 @@ const SearchPage = () => {
           </div>
 
           {/* Main Content */}
-          <div className="flex-1">
+          <div className="flex-1 w-full">
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">

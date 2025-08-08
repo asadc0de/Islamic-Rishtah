@@ -13,6 +13,7 @@ interface CareerEducationData {
 interface CareerEducationStepProps {
   data: CareerEducationData;
   onChange: (data: Partial<CareerEducationData>) => void;
+  showErrors?: boolean;
 }
 
 export const CareerEducationStep: React.FC<CareerEducationStepProps> = ({ data, onChange }) => {
@@ -55,12 +56,12 @@ export const CareerEducationStep: React.FC<CareerEducationStepProps> = ({ data, 
   };
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-sm">
-      <div className="flex items-center gap-3 mb-6">
-        <Briefcase className="text-red-600" size={24} />
+    <div className="bg-white p-4 rounded-lg shadow-sm">
+      <div className="flex items-center gap-2 mb-4">
+        <Briefcase className="text-red-600" size={18} />
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Career & Education</h2>
-          <p className="text-gray-600">Share your professional and educational background</p>
+          <h2 className="text-base font-bold text-gray-900">Career & Education</h2>
+          <p className="text-xs text-gray-600">Share your professional and educational background</p>
         </div>
       </div>
 

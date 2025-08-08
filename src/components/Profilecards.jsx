@@ -9,7 +9,7 @@ const Profilecards = () => {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center">
             <div className="w-40 h-40 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
               <div className="w-36 h-36  rounded-full flex items-center justify-center">
-               <img className='w-full h-full rounded-full' src="./images/men.jpg" alt="" srcset="" />
+               <img className='w-full h-full rounded-full' src="./images/man.jpg" alt="" srcset="" />
               </div>
             </div>
             <h3 className="text-xl font-semibold text-gray-800 mb-1">Ahmed Khan</h3>
@@ -32,7 +32,7 @@ const Profilecards = () => {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center">
             <div className="w-40 h-40 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
               <div className="w-36 h-36  rounded-full flex items-center justify-center">
-                <img className='w-full h-full rounded-full' src="./images/girl.png" alt="" srcset="" />
+                <img className='w-full h-full rounded-full' src="./images/woman.png" alt="" srcset="" />
               </div>
             </div>
             <h3 className="text-xl font-semibold text-gray-800 mb-1">Fatima Zahra</h3>
@@ -55,7 +55,7 @@ const Profilecards = () => {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center">
             <div className="w-40 h-40 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
               <div className="w-36 h-36  rounded-full flex items-center justify-center">
-               <img className='w-full h-full rounded-full' src="./images/men.jpg" alt="" srcset="" />
+               <img className='w-full h-full rounded-full' src="./images/man.jpg" alt="" srcset="" />
               </div>
             </div>
             <h3 className="text-xl font-semibold text-gray-800 mb-1">Usman Farooq</h3>

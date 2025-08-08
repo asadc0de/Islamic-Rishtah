@@ -36,6 +36,13 @@ interface ProfileData {
 }
 
 function ViewProfile() {
+  // (keep only one getProfileImage, use the existing one below)
+  // Helper to display Sunni label correctly
+  function getSunniLabel(val?: string) {
+    if (!val) return 'Muslim';
+    if (val.toLowerCase() === 'yes-sunni' || val.toLowerCase() === 'yes sunni') return 'Sunni';
+    return val;
+  }
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(true);
@@ -156,7 +163,7 @@ function ViewProfile() {
             <div className="bg-gray-200 rounded-lg h-80 flex items-center justify-center text-gray-400 overflow-hidden">
               {getProfileImage() ? (
                 <img
-                  src={getProfileImage()!}
+                  src={getProfileImage() || undefined}
                   alt="Profile"
                   className="w-full h-full object-cover rounded-lg"
                 />
@@ -178,7 +185,7 @@ function ViewProfile() {
                   {profileData.personalInfo?.firstName} {profileData.personalInfo?.lastName}
                 </h3>
                 <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-medium border border-red-200">
-                  {profileData.religiousInfo?.sunniMuslim || 'Muslim'}
+                  {getSunniLabel(profileData.religiousInfo?.sunniMuslim)}
                 </span>
               </div>
               <p className="text-gray-600 mb-4">
@@ -260,7 +267,7 @@ function ViewProfile() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Religion:</span>
-                        <span className="font-medium">{profileData.religiousInfo?.sunniMuslim || 'Not specified'}</span>
+                        <span className="font-medium">{getSunniLabel(profileData.religiousInfo?.sunniMuslim) || 'Not specified'}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Gender:</span>

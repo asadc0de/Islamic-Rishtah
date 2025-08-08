@@ -11,6 +11,7 @@ import { ref, set } from 'firebase/database';
 import { realtimeDb } from '../firebase/firebase';
 
 const Signup = () => {
+  const [creatingAccount, setCreatingAccount] = useState(false);
   const navigate = useNavigate();
      
 
@@ -60,6 +61,7 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
+    setCreatingAccount(true);
     try {
       // Create user in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
@@ -73,15 +75,6 @@ const Signup = () => {
         confirmPassword: formData.confirmPassword, // Not recommended in production
         createdAt: new Date().toISOString()
       });
-      // Optionally, keep Firestore code commented for reference
-      // await setDoc(doc(db, 'users', user.uid), {
-      //   username: formData.username,
-      //   email: formData.email,
-      //   phone: formData.phone,
-      //   password: formData.password,
-      //   confirmPassword: formData.confirmPassword,
-      //   createdAt: new Date()
-      // });
       toast.success('Signup successful!');
       setFormData({ username: '', email: '', phone: '', password: '', confirmPassword: '' });
       navigate('/complete-profile');
@@ -93,6 +86,8 @@ const Signup = () => {
       } else {
         toast.error(error.message);
       }
+    } finally {
+      setCreatingAccount(false);
     }
   };
 
@@ -224,9 +219,10 @@ const Signup = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-[#DC2626] hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 mt-6"
+              className="w-full bg-[#DC2626] hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 mt-6 disabled:opacity-60"
+              disabled={creatingAccount}
             >
-              Create Account
+              {creatingAccount ? 'Creating account...' : 'Create Account'}
             </button>
           </form>
 

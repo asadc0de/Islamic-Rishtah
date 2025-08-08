@@ -77,11 +77,12 @@ const AuthenticatedHeader = () => {
   const currentPage = location.pathname;
 
   return (
-    <header className="bg-white shadow-sm border-b sticky top-0 z-50">
+
+  <header className="sticky top-0 z-50 transition-all duration-300 backdrop-blur-md bg-white/30 shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/dashboard" className="flex items-center">
+          <Link to="/dashboard" className="flex items-center cursor-pointer">
             <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center mr-3">
               <Heart className="w-5 h-5 text-white" />
             </div>
@@ -94,11 +95,13 @@ const AuthenticatedHeader = () => {
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 const isActive = currentPage === link.to;
+                // Only show dashboard link once on profile page
+                if (currentPage === '/profile' && link.to === '/dashboard') return null;
                 return (
                   <Link
                     key={link.to}
                     to={link.to}
-                    className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
+                    className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors cursor-pointer ${
                       isActive
                         ? 'text-red-600 bg-red-50'
                         : 'text-gray-600 hover:text-gray-900'
@@ -109,19 +112,6 @@ const AuthenticatedHeader = () => {
                   </Link>
                 );
               })}
-            </nav>
-          )}
-
-          {/* Profile page - only dashboard link */}
-          {currentPage === '/profile' && (
-            <nav className="hidden md:flex items-center">
-              <Link
-                to="/dashboard"
-                className="flex items-center space-x-2 px-3 py-2 text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                <Home className="w-4 h-4" />
-                <span>Dashboard</span>
-              </Link>
             </nav>
           )}
 

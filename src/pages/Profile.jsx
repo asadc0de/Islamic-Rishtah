@@ -10,6 +10,13 @@ const TAB_TYPES = ['Personal', 'Preferences', 'Career', 'Privacy'];
 
 
 const Profile = () => {
+    // Helper to get default profile image based on gender
+    function getProfileImage() {
+      const gender = profileData?.personalInfo?.gender?.toLowerCase();
+      if (gender === 'male') return '/images/man.jpg';
+      if (gender === 'female') return '/images/woman.png';
+      return null;
+    }
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('Personal');
     const [showVisibilityDropdown, setShowVisibilityDropdown] = useState(false);
@@ -138,7 +145,7 @@ const Profile = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Email Address
                   </label>
-                  <div className="text-sm text-gray-500 bg-gray-50 px-3 py-2 rounded border">
+                  <div className="text-sm text-gray-500 bg-gray-50 px-3 py-2 rounded-lg w-fit">
                     {userInfo?.email || 'Cannot be changed'}
                   </div>
                 </div>
@@ -801,44 +808,50 @@ const Profile = () => {
     >
       <div className="max-w-4xl mx-auto space-y-6">
       {/* Profile Header Card */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
         {loading ? (
           <div className="animate-pulse">
-            <div className="flex items-start space-x-6">
+            <div className="flex flex-col xs:flex-row items-center xs:items-start xs:space-x-6 gap-4 xs:gap-0">
               <div className="w-24 h-24 bg-gray-300 rounded-full"></div>
-              <div className="flex-grow">
-                <div className="h-6 bg-gray-300 rounded mb-2 w-48"></div>
-                <div className="h-4 bg-gray-300 rounded mb-3 w-32"></div>
-                <div className="h-4 bg-gray-300 rounded w-64"></div>
+              <div className="flex-grow w-full">
+                <div className="h-6 bg-gray-300 rounded mb-2 w-32 xs:w-48"></div>
+                <div className="h-4 bg-gray-300 rounded mb-3 w-24 xs:w-32"></div>
+                <div className="h-4 bg-gray-300 rounded w-40 xs:w-64"></div>
               </div>
             </div>
           </div>
         ) : (
-          <div className="flex items-start space-x-6">
+          <div className="flex flex-col xs:flex-row items-center xs:items-start xs:space-x-6 gap-4 xs:gap-0">
             {/* Profile Image */}
-            <div className="w-24 h-24 bg-black rounded-full flex-shrink-0 relative overflow-hidden">
-              <div className="absolute inset-0 bg-black">
-                <svg viewBox="0 0 100 100" className="w-full h-full text-white">
-                  <path d="M50 10 C35 10 25 25 25 40 C25 50 30 58 38 62 L38 70 C38 80 42 85 50 85 C58 85 62 80 62 70 L62 62 C70 58 75 50 75 40 C75 25 65 10 50 10 Z" fill="currentColor" opacity="0.6"/>
-                </svg>
-              </div>
+            <div className="w-24 h-24 bg-black rounded-full flex-shrink-0 relative overflow-hidden mb-4 xs:mb-0">
+              {getProfileImage() ? (
+                <img
+                  src={getProfileImage()}
+                  alt="Profile"
+                  className="w-full h-full object-cover rounded-full"
+                />
+              ) : (
+                <div className="absolute inset-0 bg-black">
+                  <svg viewBox="0 0 100 100" className="w-full h-full text-white">
+                    <path d="M50 10 C35 10 25 25 25 40 C25 50 30 58 38 62 L38 70 C38 80 42 85 50 85 C58 85 62 80 62 70 L62 62 C70 58 75 50 75 40 C75 25 65 10 50 10 Z" fill="currentColor" opacity="0.6"/>
+                  </svg>
+                </div>
+              )}
             </div>
-            
             {/* Profile Info */}
-            <div className="flex-grow">
-              <div className="flex items-start justify-between">
+            <div className="flex-grow w-full">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-0">
                 <div>
-                  <h1 className="text-2xl font-semibold text-gray-900 mb-1">
+                  <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-1">
                     {profileData?.personalInfo?.firstName} {profileData?.personalInfo?.lastName || 'User'}
                   </h1>
-                  <p className="text-gray-600 mb-3">
+                  <p className="text-gray-600 mb-2 sm:mb-3 text-sm sm:text-base">
                     {profileData?.personalInfo?.dateOfBirth ? 
                       `${new Date().getFullYear() - new Date(profileData?.personalInfo?.dateOfBirth).getFullYear()} years old` : 
                       'Age not provided'
                     }
                   </p>
-                  
-                  <div className="flex items-center text-gray-600 mb-4">
+                  <div className="flex items-center text-gray-600 mb-3 sm:mb-4 text-xs sm:text-sm">
                     <MapPin className="w-4 h-4 mr-2 text-red-500" />
                     <span>
                       {profileData?.familyBackground?.city && profileData?.familyBackground?.country 
@@ -848,22 +861,18 @@ const Profile = () => {
                     </span>
                   </div>
                 </div>
-                
                 {/* Status Badges */}
-                <div className="flex flex-col items-end space-y-2">
-                  <div className="flex space-x-2">
-                    <span className="px-3 py-1 text-xs border border-red-500 text-red-500 rounded-full">
-                      {profileData?.personalInfo?.gender || 'Not specified'}
-                    </span>
-                    <span className="px-3 py-1 text-xs text-gray-700">
-                      {profileData?.familyBackground?.maritalStatus || 'Not specified'}
-                    </span>
-                  </div>
+                <div className="flex flex-row sm:flex-col items-end sm:items-end space-x-2 sm:space-x-0 sm:space-y-2">
+                  <span className="px-3 py-1 text-xs border border-red-500 text-red-500 rounded-full">
+                    {profileData?.personalInfo?.gender || 'Not specified'}
+                  </span>
+                  <span className="px-3 py-1 text-xs text-gray-700">
+                    {profileData?.familyBackground?.maritalStatus || 'Not specified'}
+                  </span>
                 </div>
               </div>
-              
               {/* Additional Info Icons */}
-              <div className="flex space-x-6 text-sm text-gray-600">
+              <div className="flex flex-wrap gap-4 sm:gap-6 text-xs sm:text-sm text-gray-600 mt-2">
                 <div className="flex items-center">
                   <Briefcase className="w-4 h-4 mr-2 text-red-500" />
                   <span>{profileData?.careerEducation?.occupation || 'Not provided'}</span>
@@ -880,16 +889,17 @@ const Profile = () => {
 
       {/* Navigation Tabs */}
       <div className="bg-white rounded-lg shadow-sm">
-        <div className="flex border-b">
+        <div className="flex overflow-x-auto border-b no-scrollbar" style={{ WebkitOverflowScrolling: 'touch' }}>
           {TAB_TYPES.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-6 py-4 text-sm font-medium transition-colors ${
+              className={`flex-shrink-0 px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
                 activeTab === tab
                   ? 'text-gray-900 border-b-2 border-red-500 bg-white'
                   : 'text-gray-500 hover:text-gray-700'
               }`}
+              style={{ minWidth: 100 }}
             >
               {tab}
             </button>

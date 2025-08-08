@@ -38,3 +38,8 @@ html{
 body {
   font-family: 'Inter', sans-serif;
 }
+
+/* Add cursor-pointer to all buttons and links globally for robustness */
+button, a, [role="button"], .cursor-pointer {
+  cursor: pointer !important;
+}

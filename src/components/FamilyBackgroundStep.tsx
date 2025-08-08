@@ -17,6 +17,7 @@ interface FamilyBackgroundData {
 interface FamilyBackgroundStepProps {
   data: FamilyBackgroundData;
   onChange: (data: Partial<FamilyBackgroundData>) => void;
+  showErrors?: boolean;
 }
 
 export const FamilyBackgroundStep: React.FC<FamilyBackgroundStepProps> = ({ data, onChange }) => {
@@ -195,12 +196,12 @@ export const FamilyBackgroundStep: React.FC<FamilyBackgroundStepProps> = ({ data
   };
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-sm">
-      <div className="flex items-center gap-3 mb-6">
-        <Home className="text-red-600" size={24} />
+    <div className="bg-white p-4 rounded-lg shadow-sm">
+      <div className="flex items-center gap-2 mb-4">
+        <Home className="text-red-600" size={18} />
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Family & Background</h2>
-          <p className="text-gray-600">Tell us about your family and background</p>
+          <h2 className="text-base font-bold text-gray-900">Family & Background</h2>
+          <p className="text-xs text-gray-600">Tell us about your family and background</p>
         </div>
       </div>
 

@@ -16,6 +16,7 @@ interface PersonalInfoData {
 interface PersonalInfoStepProps {
   data: PersonalInfoData;
   onChange: (data: Partial<PersonalInfoData>) => void;
+  showErrors?: boolean;
 }
 
 export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onChange }) => {
@@ -30,13 +31,16 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onChan
     setOpenDropdown(isOpen ? dropdownId : null);
   };
 
+  // Get today's date in yyyy-mm-dd format for max attribute
+  const todayStr = new Date().toISOString().split('T')[0];
+
   return (
-    <div className="bg-white p-8 rounded-lg shadow-sm">
-      <div className="flex items-center gap-3 mb-6">
-        <User className="text-red-600" size={24} />
+    <div className="bg-white p-4 rounded-lg shadow-sm">
+      <div className="flex items-center gap-2 mb-4">
+        <User className="text-red-600" size={18} />
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Personal Info</h2>
-          <p className="text-gray-600">Tell us about yourself to help us find your perfect match</p>
+          <h2 className="text-base font-bold text-gray-900">Personal Info</h2>
+          <p className="text-xs text-gray-600">Tell us about yourself to help us find your perfect match</p>
         </div>
       </div>
 
@@ -66,6 +70,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onChan
             type="date"
             value={data.dateOfBirth}
             onChange={(e) => onChange({ dateOfBirth: e.target.value })}
+            max={todayStr}
             className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg hover:border-gray-300 focus:outline-none focus:border-red-300 focus:ring-1 focus:ring-red-200 transition-colors"
           />
         </FormField>

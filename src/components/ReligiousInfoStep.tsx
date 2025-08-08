@@ -15,6 +15,7 @@ interface ReligiousInfoData {
 interface ReligiousInfoStepProps {
   data: ReligiousInfoData;
   onChange: (data: Partial<ReligiousInfoData>) => void;
+  showErrors?: boolean;
 }
 
 export const ReligiousInfoStep: React.FC<ReligiousInfoStepProps> = ({ data, onChange }) => {
@@ -61,12 +62,12 @@ export const ReligiousInfoStep: React.FC<ReligiousInfoStepProps> = ({ data, onCh
   };
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-sm">
-      <div className="flex items-center gap-3 mb-6">
-        <Heart className="text-red-600" size={24} />
+    <div className="bg-white p-4 rounded-lg shadow-sm">
+      <div className="flex items-center gap-2 mb-4">
+        <Heart className="text-red-600" size={18} />
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Religious Info</h2>
-          <p className="text-gray-600">Share your religious preferences and practices</p>
+          <h2 className="text-base font-bold text-gray-900">Religious Info</h2>
+          <p className="text-xs text-gray-600">Share your religious preferences and practices</p>
         </div>
       </div>
 
