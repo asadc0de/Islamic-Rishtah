@@ -53,6 +53,7 @@ export const ProfileCompletion: React.FC = () => {
   const totalSteps = 4;
   const navigate = useNavigate();
   const [showErrors, setShowErrors] = useState(false);
+  const [creatingProfile, setCreatingProfile] = useState(false);
 
   const [formData, setFormData] = useState<FormData>({
     personalInfo: {
@@ -206,6 +207,7 @@ export const ProfileCompletion: React.FC = () => {
       return;
     }
     try {
+      setCreatingProfile(true);
       // Save detailed profile data to Firestore
       await setDoc(doc(db, 'userProfileData', user.uid), {
         ...formData,
@@ -216,6 +218,8 @@ export const ProfileCompletion: React.FC = () => {
       setTimeout(() => navigate('/dashboard'), 1200);
     } catch (error: any) {
       toast.error('Failed to save profile: ' + error.message);
+    } finally {
+      setCreatingProfile(false);
     }
   };
 
@@ -278,9 +282,9 @@ export const ProfileCompletion: React.FC = () => {
         <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mt-8 gap-3">
           <button
             onClick={handlePrevious}
-            disabled={currentStep === 1}
+            disabled={currentStep === 1 || creatingProfile}
             className={`flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-colors w-full sm:w-auto ${
-              currentStep === 1
+              currentStep === 1 || creatingProfile
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
             }`}
@@ -291,13 +295,18 @@ export const ProfileCompletion: React.FC = () => {
 
           <button
             onClick={currentStep === totalSteps ? handleCompleteProfile : handleNext}
+            disabled={creatingProfile}
             className={`flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-colors w-full sm:w-auto ${
               currentStep === totalSteps
                 ? 'bg-green-600 text-white hover:bg-green-700'
                 : 'bg-red-600 text-white hover:bg-red-700'
-            }`}
+            } ${creatingProfile ? 'opacity-60 cursor-not-allowed' : ''}`}
           >
-            {currentStep === totalSteps ? 'Complete Profile' : 'Next'}
+            {creatingProfile
+              ? 'Creating profile...'
+              : currentStep === totalSteps
+                ? 'Complete Profile'
+                : 'Next'}
             <ChevronRight size={16} />
           </button>
         </div>

@@ -32,15 +32,10 @@ const Profile = () => {
     useEffect(() => {
       const fetchProfileData = async () => {
         try {
-          // Get logged in user from localStorage for basic info
-          const loggedInUser = localStorage.getItem('loggedInUser');
-          if (loggedInUser) {
-            setUserInfo(JSON.parse(loggedInUser));
-          }
-
           // Get current authenticated user
           const user = auth.currentUser;
           if (user) {
+            setUserInfo({ email: user.email, phone: user.phoneNumber });
             // Fetch profile data from Firestore
             const profileDoc = await getDoc(doc(db, 'userProfileData', user.uid));
             if (profileDoc.exists()) {
