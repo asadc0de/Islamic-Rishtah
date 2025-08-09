@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { X, MapPin, Building, GraduationCap, Heart, User, Clock, Calendar, Baby, Home, Users } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebase/firebase';
+import { db, realtimeDb } from '../firebase/firebase';
+import { ref as dbRef, onValue } from 'firebase/database';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -36,6 +37,7 @@ interface ProfileData {
 }
 
 function ViewProfile() {
+  const [onlineStatus, setOnlineStatus] = useState<'online' | 'offline'>('offline');
   // (keep only one getProfileImage, use the existing one below)
   // Helper to display Sunni label correctly
   function getSunniLabel(val?: string) {
@@ -51,6 +53,14 @@ function ViewProfile() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Listen for online status of viewed user
+    if (userId) {
+      const statusRef = dbRef(realtimeDb, '/status/' + userId);
+      const unsubscribeStatus = onValue(statusRef, (snap) => {
+        setOnlineStatus((snap.val()?.state === 'online') ? 'online' : 'offline');
+      });
+      return () => unsubscribeStatus();
+    }
     const fetchProfileData = async () => {
       if (!userId) {
         toast.error('User ID not found');
@@ -182,6 +192,7 @@ function ViewProfile() {
             <div className="mb-6">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-2xl font-bold text-gray-800">
+                  <span className="inline-block w-3 h-3 rounded-full mr-2 align-middle" style={{ backgroundColor: onlineStatus === 'online' ? '#22c55e' : '#d1d5db', border: '1px solid #888' }} title={onlineStatus === 'online' ? 'Online' : 'Offline'} />
                   {profileData.personalInfo?.firstName} {profileData.personalInfo?.lastName}
                 </h3>
                 <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-medium border border-red-200">

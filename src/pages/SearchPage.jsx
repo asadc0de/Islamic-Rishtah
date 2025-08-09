@@ -12,8 +12,9 @@ import {
   User,
   Bell,
 } from "lucide-react";
-import { auth, db } from '../firebase/firebase';
+import { auth, db, realtimeDb } from '../firebase/firebase';
 import { collection, getDocs, query, where } from 'firebase/firestore';
+import { ref as dbRef, onValue } from 'firebase/database';
 import { toast } from 'react-toastify';
 import AuthenticatedHeader from '../components/AuthenticatedHeader';
 
@@ -119,6 +120,7 @@ const SearchPage = () => {
   const [selectedProfession, setSelectedProfession] = useState("All Professions");
   const [profiles, setProfiles] = useState([]);
   const [filteredProfiles, setFilteredProfiles] = useState([]);
+  const [onlineStatuses, setOnlineStatuses] = useState({});
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState(null);
   // Get current user ID on mount
@@ -356,6 +358,26 @@ const SearchPage = () => {
     setFilteredProfiles(filtered);
   }, [profiles, searchQuery, ageRange, selectedCountry, selectedMaritalStatus, selectedEducation, selectedProfession, sortBy]);
 
+  // Listen for online status of all profiles
+  useEffect(() => {
+    if (!profiles.length) return;
+    const listeners = [];
+    profiles.forEach((profile) => {
+      if (!profile.id) return;
+      const statusRef = dbRef(realtimeDb, '/status/' + profile.id);
+      const unsubscribe = onValue(statusRef, (snap) => {
+        setOnlineStatuses((prev) => ({
+          ...prev,
+          [profile.id]: snap.val()?.state === 'online' ? 'online' : 'offline',
+        }));
+      });
+      listeners.push(unsubscribe);
+    });
+    return () => {
+      listeners.forEach((unsub) => unsub && unsub());
+    };
+  }, [profiles]);
+
   const clearAllFilters = () => {
     setSearchQuery("");
     setAgeRange([18, 50]);
@@ -418,8 +440,15 @@ const SearchPage = () => {
             <Camera className="w-8 h-8 text-gray-400" />
           )}
         </div>
-        <div className="absolute top-3 left-3 bg-gray-500 text-white text-xs px-2 py-1 rounded">
-          {profile.isOnline ? 'Online' : 'Offline'}
+        <div className="absolute top-3 left-3 flex items-center gap-1">
+          <span
+            className="inline-block w-3 h-3 rounded-full border border-gray-400"
+            style={{ backgroundColor: onlineStatuses[profile.id] === 'online' ? '#22c55e' : '#d1d5db' }}
+            title={onlineStatuses[profile.id] === 'online' ? 'Online' : 'Offline'}
+          />
+          <span className="bg-gray-500 text-white text-xs px-2 py-1 rounded">
+            {onlineStatuses[profile.id] === 'online' ? 'Online' : 'Offline'}
+          </span>
         </div>
       </div>
       <div className="p-4">

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin, Briefcase, GraduationCap, Edit3, Eye, ChevronDown, Save, Check } from 'lucide-react';
 import AuthenticatedHeader from "../components/AuthenticatedHeader";
-import { auth, db } from '../firebase/firebase';
+import { auth, db, realtimeDb } from '../firebase/firebase';
+import { ref as dbRef, onValue } from 'firebase/database';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +11,7 @@ const TAB_TYPES = ['Personal', 'Preferences', 'Career', 'Privacy'];
 
 
 const Profile = () => {
+  const [onlineStatus, setOnlineStatus] = useState('offline');
     // Helper to get default profile image based on gender
     function getProfileImage() {
       const gender = profileData?.personalInfo?.gender?.toLowerCase();
@@ -19,8 +21,9 @@ const Profile = () => {
     }
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('Personal');
-    const [showVisibilityDropdown, setShowVisibilityDropdown] = useState(false);
-    const [selectedVisibility, setSelectedVisibility] = useState('Public - Visible to all users');
+  const [showVisibilityDropdown, setShowVisibilityDropdown] = useState(false);
+  const [selectedVisibility, setSelectedVisibility] = useState('Public - Visible to all users');
+  const [showOnlineStatus, setShowOnlineStatus] = useState(true);
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [userInfo, setUserInfo] = useState(null);
@@ -30,6 +33,15 @@ const Profile = () => {
     const [editingTab, setEditingTab] = useState('');
 
     useEffect(() => {
+      // Listen for online status
+      const user = auth.currentUser;
+      let unsubscribeStatus;
+      if (user) {
+        const statusRef = dbRef(realtimeDb, '/status/' + user.uid);
+        unsubscribeStatus = onValue(statusRef, (snap) => {
+          setOnlineStatus(snap.val()?.state || 'offline');
+        });
+      }
       const fetchProfileData = async () => {
         try {
           // Get current authenticated user
@@ -39,7 +51,16 @@ const Profile = () => {
             // Fetch profile data from Firestore
             const profileDoc = await getDoc(doc(db, 'userProfileData', user.uid));
             if (profileDoc.exists()) {
-              setProfileData(profileDoc.data());
+              const data = profileDoc.data();
+              setProfileData(data);
+              // Load privacy settings if present
+              if (data.profileSettings) {
+                setShowOnlineStatus(data.profileSettings.showOnlineStatus !== false); // default true
+                setSelectedVisibility(data.profileSettings.visibility || 'Public - Visible to all users');
+              } else {
+                setShowOnlineStatus(true);
+                setSelectedVisibility('Public - Visible to all users');
+              }
             } else {
               console.log('No profile data found');
               toast.info('Please complete your profile first');
@@ -56,9 +77,12 @@ const Profile = () => {
       };
 
       fetchProfileData();
+      return () => {
+        if (unsubscribeStatus) unsubscribeStatus();
+      };
     }, [navigate]);
   
-    const renderTabContent = () => {
+  const renderTabContent = () => {
       if (loading) {
         return (
           <div className="p-6 text-center">
@@ -67,13 +91,21 @@ const Profile = () => {
         );
       }
 
+      // Online status dot (only show if enabled)
+      const statusDot = showOnlineStatus ? (
+        <span className="inline-block w-3 h-3 rounded-full mr-2 align-middle"
+          style={{ backgroundColor: onlineStatus === 'online' ? '#22c55e' : '#d1d5db', border: '1px solid #888' }}
+          title={onlineStatus === 'online' ? 'Online' : 'Offline'}
+        />
+      ) : null;
+
       switch (activeTab) {
         case 'Personal':
           return (
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900 mb-1">Personal Information</h2>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-1">{statusDot}Personal Information</h2>
                   <p className="text-sm text-gray-500">Manage your basic profile information</p>
                 </div>
                 {!isEditing || editingTab !== 'Personal' ? (
@@ -565,27 +597,7 @@ const Profile = () => {
               </div>
   
               <div className="space-y-6">
-                <div className="flex items-center justify-between py-4">
-                  <div>
-                    <h3 className="text-base font-medium text-gray-900">Show Last Seen</h3>
-                    <p className="text-sm text-gray-500">Let others see when you were last active</p>
-                  </div>
-                  <div className="relative">
-                    <input
-                      type="checkbox"
-                      className="sr-only"
-                      id="lastSeen"
-                    />
-                    <label
-                      htmlFor="lastSeen"
-                      className="flex items-center cursor-pointer"
-                    >
-                      <div className="w-12 h-6 bg-gray-200 rounded-full relative transition-colors duration-200">
-                        <div className="w-5 h-5 bg-white rounded-full absolute top-0.5 left-0.5 transition-transform duration-200 shadow-sm"></div>
-                      </div>
-                    </label>
-                  </div>
-                </div>
+                {/* Removed 'Show Last Seen' privacy option */}
   
                 <div className="flex items-center justify-between py-4">
                   <div>
@@ -597,13 +609,15 @@ const Profile = () => {
                       type="checkbox"
                       className="sr-only"
                       id="onlineStatus"
+                      checked={showOnlineStatus}
+                      onChange={e => setShowOnlineStatus(e.target.checked)}
                     />
                     <label
                       htmlFor="onlineStatus"
                       className="flex items-center cursor-pointer"
                     >
-                      <div className="w-12 h-6 bg-gray-200 rounded-full relative transition-colors duration-200">
-                        <div className="w-5 h-5 bg-white rounded-full absolute top-0.5 left-0.5 transition-transform duration-200 shadow-sm"></div>
+                      <div className={`w-12 h-6 rounded-full relative transition-colors duration-200 ${showOnlineStatus ? 'bg-red-500' : 'bg-gray-200'}`}>
+                        <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 left-0.5 transition-transform duration-200 shadow-sm ${showOnlineStatus ? 'translate-x-6' : ''}`}></div>
                       </div>
                     </label>
                   </div>
@@ -653,9 +667,31 @@ const Profile = () => {
                 </div>
   
                 <div className="pt-4">
-                  <button className="flex items-center space-x-2 px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
+                  <button
+                    className="flex items-center space-x-2 px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                    onClick={async () => {
+                      setSaving(true);
+                      try {
+                        const user = auth.currentUser;
+                        if (user) {
+                          await updateDoc(doc(db, 'userProfileData', user.uid), {
+                            profileSettings: {
+                              showOnlineStatus,
+                              visibility: selectedVisibility,
+                            },
+                          });
+                          toast.success('Privacy settings saved!');
+                        }
+                      } catch (err) {
+                        toast.error('Failed to save privacy settings');
+                      } finally {
+                        setSaving(false);
+                      }
+                    }}
+                    disabled={saving}
+                  >
                     <Save className="w-4 h-4" />
-                    <span>Save Privacy Settings</span>
+                    <span>{saving ? 'Saving...' : 'Save Privacy Settings'}</span>
                   </button>
                 </div>
               </div>
