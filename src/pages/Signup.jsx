@@ -2,7 +2,7 @@
  import React, { useState } from 'react';
 import { Heart, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { auth, db } from '../firebase/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
@@ -94,7 +94,6 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-100 via-rose-50 to-pink-200 flex items-center justify-center px-4 py-8">
-      <ToastContainer />
       <div className="w-full max-w-md">
         {/* Header Section */}
         <div className="text-center mb-8">

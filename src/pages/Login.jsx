@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Heart, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Use React Router's navigation instead of window.location
 import { useNavigate } from "react-router-dom";
 import { auth, realtimeDb } from "../firebase/firebase";
@@ -70,7 +70,6 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-[#FEF3F3] flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
-      <ToastContainer />
       {/* Logo and Header */}
       <div className="mb-8">
         <div className="flex items-center justify-center mr-60 mt-4">
