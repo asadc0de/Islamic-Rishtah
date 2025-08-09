@@ -100,6 +100,7 @@ export const ProfileCompletion: React.FC = () => {
   // Validation functions for each step
   const validatePersonalInfo = (data: FormData['personalInfo']) => {
     if (!data.firstName || !data.lastName || !data.dateOfBirth || !data.gender || !data.aboutMe || !data.expectations || !data.healthConditions) {
+      toast.error('All fields are required.');
       return false;
     }
     // Age validation
@@ -153,15 +154,14 @@ export const ProfileCompletion: React.FC = () => {
   const handleNext = () => {
     let valid = true;
     if (currentStep === 1 && !validatePersonalInfo(formData.personalInfo)) {
-      toast.error('Please complete all required fields in Personal Info.');
       valid = false;
     }
     if (currentStep === 2 && !validateReligiousInfo(formData.religiousInfo)) {
-      toast.error('Please complete all required fields in Religious Info.');
+      toast.error('All fields are required.');
       valid = false;
     }
     if (currentStep === 3 && !validateFamilyBackground(formData.familyBackground)) {
-      toast.error('Please complete all required fields in Family & Background.');
+      toast.error('All fields are required.');
       valid = false;
     }
     setShowErrors(!valid);
@@ -180,22 +180,21 @@ export const ProfileCompletion: React.FC = () => {
   const handleCompleteProfile = async () => {
     let valid = true;
     if (!validatePersonalInfo(formData.personalInfo)) {
-      toast.error('Please complete all required fields in Personal Info.');
       setCurrentStep(1);
       valid = false;
     }
     if (!validateReligiousInfo(formData.religiousInfo)) {
-      toast.error('Please complete all required fields in Religious Info.');
+      toast.error('All fields are required.');
       setCurrentStep(2);
       valid = false;
     }
     if (!validateFamilyBackground(formData.familyBackground)) {
-      toast.error('Please complete all required fields in Family & Background.');
+      toast.error('All fields are required.');
       setCurrentStep(3);
       valid = false;
     }
     if (!validateCareerEducation(formData.careerEducation)) {
-      toast.error('Please complete all required fields in Career & Education.');
+      toast.error('All fields are required.');
       setCurrentStep(4);
       valid = false;
     }
@@ -213,7 +212,7 @@ export const ProfileCompletion: React.FC = () => {
         profileCompleted: true,
         profileCompletedAt: new Date().toISOString()
       });
-      toast.success('Profile saved successfully!');
+      toast.success('Profile information saved successfully!');
       setTimeout(() => navigate('/dashboard'), 1200);
     } catch (error: any) {
       toast.error('Failed to save profile: ' + error.message);

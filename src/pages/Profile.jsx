@@ -169,7 +169,7 @@ const Profile = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Phone Number
-                  </label>
+                  </label>                                                                                                        
                   <div className="text-gray-900">{userInfo?.phone || 'Not provided'}</div>
                 </div>
   
