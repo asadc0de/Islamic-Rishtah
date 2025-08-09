@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, MapPin, Building, GraduationCap, Heart, User, Clock, Calendar, Baby, Home, Users } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, increment } from 'firebase/firestore';
 import { db, realtimeDb } from '../firebase/firebase';
 import { ref as dbRef, onValue } from 'firebase/database';
 import { toast, ToastContainer } from 'react-toastify';
@@ -53,25 +53,32 @@ function ViewProfile() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!userId) return;
     // Listen for online status of viewed user
-    if (userId) {
-      const statusRef = dbRef(realtimeDb, '/status/' + userId);
-      const unsubscribeStatus = onValue(statusRef, (snap) => {
-        setOnlineStatus((snap.val()?.state === 'online') ? 'online' : 'offline');
-      });
-      return () => unsubscribeStatus();
-    }
+    const statusRef = dbRef(realtimeDb, '/status/' + userId);
+    const unsubscribeStatus = onValue(statusRef, (snap) => {
+      setOnlineStatus((snap.val()?.state === 'online') ? 'online' : 'offline');
+    });
+    let incremented = false;
     const fetchProfileData = async () => {
-      if (!userId) {
-        toast.error('User ID not found');
-        navigate('/search');
-        return;
-      }
-
       try {
         const profileDoc = await getDoc(doc(db, 'userProfileData', userId));
         if (profileDoc.exists()) {
           setProfileData(profileDoc.data() as ProfileData);
+          // Increment profile view only after data is loaded, and only once
+          if (!incremented) {
+            const currentUser = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
+            if (currentUser?.uid !== userId) {
+              await updateDoc(doc(db, 'userProfileData', userId), {
+                profileViews: increment(1),
+                profileViewHistory: [
+                  ...(profileDoc.data().profileViewHistory || []),
+                  { timestamp: Date.now(), viewerId: currentUser?.uid || null }
+                ]
+              });
+              incremented = true;
+            }
+          }
         } else {
           toast.error('Profile not found');
           navigate('/search');
@@ -84,8 +91,8 @@ function ViewProfile() {
         setLoading(false);
       }
     };
-
     fetchProfileData();
+    return () => unsubscribeStatus();
   }, [userId, navigate]);
 
   const closeModal = () => {

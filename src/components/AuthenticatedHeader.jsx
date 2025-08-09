@@ -78,8 +78,8 @@ const AuthenticatedHeader = () => {
 
   return (
 
-  <header className="sticky top-0 z-50 transition-all duration-300 backdrop-blur-md bg-white/30 shadow-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <header className="sticky top-0 z-50 transition-all duration-300 backdrop-blur-md bg-white/30 shadow-md w-full">
+  <div className="w-full px-4 sm:px-8 md:px-16 lg:px-[6rem]">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/dashboard" className="flex items-center cursor-pointer">

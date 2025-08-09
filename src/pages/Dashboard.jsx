@@ -7,26 +7,47 @@ import { doc, getDoc } from "firebase/firestore";
 
 const Dashboard = () => {
   const [username, setUsername] = useState("User");
+  const [profileViews, setProfileViews] = useState(0);
+  const [profileViewHistory, setProfileViewHistory] = useState([]);
+  const [viewChange, setViewChange] = useState(0);
 
   useEffect(() => {
-    const fetchUsername = async () => {
-      // Try to get username from Firestore profile
+    const fetchProfile = async () => {
       try {
         const user = auth.currentUser;
         if (user) {
           const profileDoc = await getDoc(doc(db, "userProfileData", user.uid));
           if (profileDoc.exists()) {
             const profileData = profileDoc.data();
-            if (
-              profileData.personalInfo &&
-              profileData.personalInfo.firstName
-            ) {
+            if (profileData.personalInfo && profileData.personalInfo.firstName) {
               setUsername(profileData.personalInfo.firstName);
-              return;
             } else if (profileData.username) {
               setUsername(profileData.username);
-              return;
             }
+            setProfileViews(profileData.profileViews || 0);
+            setProfileViewHistory(profileData.profileViewHistory || []);
+  useEffect(() => {
+    // Calculate % change in views from last week
+    if (!profileViewHistory.length) {
+      setViewChange(0);
+      return;
+    }
+    const now = Date.now();
+    const oneWeek = 7 * 24 * 60 * 60 * 1000;
+    const lastWeekStart = now - oneWeek;
+    const prevWeekStart = now - 2 * oneWeek;
+    let lastWeek = 0;
+    let prevWeek = 0;
+    profileViewHistory.forEach((v) => {
+      if (!v.timestamp) return;
+      if (v.timestamp >= lastWeekStart) lastWeek++;
+      else if (v.timestamp >= prevWeekStart && v.timestamp < lastWeekStart) prevWeek++;
+    });
+    if (prevWeek === 0 && lastWeek > 0) setViewChange(100);
+    else if (prevWeek === 0 && lastWeek === 0) setViewChange(0);
+    else setViewChange(Math.round(((lastWeek - prevWeek) / prevWeek) * 100));
+  }, [profileViewHistory]);
+            return;
           }
         }
       } catch (e) {
@@ -43,7 +64,7 @@ const Dashboard = () => {
         }
       }
     };
-    fetchUsername();
+    fetchProfile();
   }, []);
 
   return (
@@ -70,10 +91,10 @@ const Dashboard = () => {
               <User className="w-5 h-5 text-gray-400" />
             </div>
             <div className="space-y-1">
-              <div className="text-3xl font-bold text-gray-900">24</div>
+              <div className="text-3xl font-bold text-gray-900">{profileViews}</div>
               <div className="flex items-center text-sm text-gray-600">
                 <TrendingUp className="w-4 h-4 mr-1" />
-                +12% from last week
+                {viewChange >= 0 ? '+' : ''}{viewChange}% from last week
               </div>
             </div>
           </div>

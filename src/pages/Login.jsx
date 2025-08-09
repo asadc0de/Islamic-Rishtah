@@ -58,7 +58,12 @@ const Login = () => {
       navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+      // Show a user-friendly error for all invalid credential errors
+      if (
+        error.code === 'auth/user-not-found' ||
+        error.code === 'auth/wrong-password' ||
+        error.code === 'auth/invalid-credential'
+      ) {
         toast.error("Invalid email or password");
       } else {
         toast.error(error.message);
