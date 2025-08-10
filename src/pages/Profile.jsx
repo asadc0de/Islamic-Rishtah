@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import LoadingSpinner from '../components/LoadingSpinner';
 import { MapPin, Briefcase, GraduationCap, Edit3, Eye, ChevronDown, Save, Check } from 'lucide-react';
 import AuthenticatedHeader from "../components/AuthenticatedHeader";
 import { auth, db, realtimeDb } from '../firebase/firebase';
@@ -84,11 +85,7 @@ const Profile = () => {
   
   const renderTabContent = () => {
       if (loading) {
-        return (
-          <div className="p-6 text-center">
-            <div className="animate-pulse">Loading...</div>
-          </div>
-        );
+        return <LoadingSpinner message="Loading profile..." />;
       }
 
       // Online status dot (only show if enabled)
@@ -102,7 +99,7 @@ const Profile = () => {
       switch (activeTab) {
         case 'Personal':
           return (
-            <div className="p-6">
+            <div className="p-6 text-xs sm:text-base">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-xl font-semibold text-gray-900 mb-1">{statusDot}Personal Information</h2>
@@ -313,7 +310,7 @@ const Profile = () => {
   
         case 'Preferences':
           return (
-            <div className="p-6">
+            <div className="p-6 text-xs sm:text-base">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-xl font-semibold text-gray-900 mb-1">Partner Preferences</h2>
@@ -460,7 +457,7 @@ const Profile = () => {
   
         case 'Career':
           return (
-            <div className="p-6">
+            <div className="p-6 text-xs sm:text-base">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-xl font-semibold text-gray-900 mb-1">Career Information</h2>
@@ -585,7 +582,7 @@ const Profile = () => {
   
         case 'Privacy':
           return (
-            <div className="p-6">
+            <div className="p-6 text-xs sm:text-base">
               <div className="flex items-center mb-6">
                 <div className="w-6 h-6 mr-3 flex items-center justify-center">
                   <div className="w-4 h-4 border-2 border-red-500 rounded"></div>
@@ -841,16 +838,7 @@ const Profile = () => {
       {/* Profile Header Card */}
       <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
         {loading ? (
-          <div className="animate-pulse">
-            <div className="flex flex-col xs:flex-row items-center xs:items-start xs:space-x-6 gap-4 xs:gap-0">
-              <div className="w-24 h-24 bg-gray-300 rounded-full"></div>
-              <div className="flex-grow w-full">
-                <div className="h-6 bg-gray-300 rounded mb-2 w-32 xs:w-48"></div>
-                <div className="h-4 bg-gray-300 rounded mb-3 w-24 xs:w-32"></div>
-                <div className="h-4 bg-gray-300 rounded w-40 xs:w-64"></div>
-              </div>
-            </div>
-          </div>
+          <LoadingSpinner message="Loading profile..." />
         ) : (
           <div className="flex flex-col xs:flex-row items-center xs:items-start xs:space-x-6 gap-4 xs:gap-0">
             {/* Profile Image */}
@@ -919,25 +907,27 @@ const Profile = () => {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="bg-white rounded-lg shadow-sm">
-        <div className="flex overflow-x-auto border-b no-scrollbar" style={{ WebkitOverflowScrolling: 'touch' }}>
-          {TAB_TYPES.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`flex-shrink-0 px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
-                activeTab === tab
-                  ? 'text-gray-900 border-b-2 border-red-500 bg-white'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-              style={{ minWidth: 100 }}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        {/* Tab Content */}
+        <div className="bg-white rounded-lg shadow-sm">
+          <div
+            className="flex justify-between overflow-x-auto border-b scrollbar-hide"
+            style={{ WebkitOverflowScrolling: 'touch' }}
+          >
+            {TAB_TYPES.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`flex-shrink-0 px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap
+              ${activeTab === tab
+            ? 'text-gray-900 border-b-2 border-red-500 bg-white'
+            : 'text-gray-500 hover:text-gray-700'}
+            `}
+            style={{ minWidth: 90 }}
+          >
+            {tab}
+          </button>
+            ))}
+          </div>
+          {/* Tab Content */}
         {renderTabContent()}
       </div>
     </div>

@@ -4,7 +4,7 @@ const Reviews = () => {
   return (
     <div className='px-6'>
       {/* Success Stories Section */}
-        <div className="mb-16">
+        <div id='successstories' className="mb-16">
           <h2 className="text-3xl font-bold text-gray-800 text-center mb-12">
             Success Stories
           </h2>

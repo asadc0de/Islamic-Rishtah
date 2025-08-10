@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Heart, User, LogOut, Settings, Search, Home, UserCircle } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Heart, User, LogOut, Settings, Search, Home, UserCircle, Mail } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { auth, db } from '../firebase/firebase';
 import { doc, getDoc } from 'firebase/firestore';
@@ -8,6 +8,18 @@ import { toast } from 'react-toastify';
 
 const AuthenticatedHeader = () => {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  // Hide dropdown when clicking outside
+  useEffect(() => {
+    if (!userDropdownOpen) return;
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setUserDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [userDropdownOpen]);
   const [userInfo, setUserInfo] = useState(null);
   const [profileData, setProfileData] = useState(null);
   const navigate = useNavigate();
@@ -134,21 +146,23 @@ const AuthenticatedHeader = () => {
 
             {/* Dropdown Menu */}
             {userDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+              <div ref={dropdownRef} className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                 <div className="px-4 py-3 border-b border-gray-100">
                   <div className="flex items-center space-x-3">
                     {getProfileImage() ? (
                       <img
                         src={getProfileImage()}
                         alt="Profile"
-                        className="w-10 h-10 rounded-full object-cover"
+                        className="w-7 h-7 rounded-full object-cover"
                       />
                     ) : (
-                      <User className="w-10 h-10 p-2 bg-gray-200 rounded-full" />
+                      <User className="w-7 h-7 p-1 bg-gray-200 rounded-full" />
                     )}
                     <div>
                       <p className="text-sm font-medium text-gray-900">{getDisplayName()}</p>
-                      <p className="text-sm text-gray-500">{userInfo?.email || 'No email'}</p>
+                      <div className="flex items-center space-x-1">
+                        <p className="text-xs text-gray-500 break-all max-w-[140px] truncate">{userInfo?.email || 'No email'}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -185,14 +199,14 @@ const AuthenticatedHeader = () => {
                   <Link
                     key={link.to}
                     to={link.to}
-                    className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-md transition-colors ${
+                    className={`flex flex-col items-center space-y-0.5 px-2 py-1 rounded-md transition-colors ${
                       isActive
                         ? 'text-red-600'
                         : 'text-gray-600'
                     }`}
                   >
-                    <Icon className="w-5 h-5" />
-                    <span className="text-xs">{link.label}</span>
+                    <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="text-[10px] sm:text-xs">{link.label}</span>
                   </Link>
                 );
               })}

@@ -93,24 +93,31 @@ const Signup = () => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-rose-50 to-pink-200 flex items-center justify-center px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-rose-50 to-pink-200 flex flex-col items-center justify-center px-4 py-8 pb-16">
       <div className="w-full max-w-md">
+        {/* Back to Home Link (top) */}
+        <div className="mb-4 mt-2">
+          <Link to='/' className="flex items-center text-gray-600 hover:text-gray-800 text-sm transition-colors w-fit">
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Back to Home
+          </Link>
+        </div>
         {/* Header Section */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4 mr-60">
-            <div className="bg-red-600 rounded-full p-3 mr-3">
-              <Heart className="w-6 h-6 text-white " />
+        <div className="mb-8">
+          <div className="flex flex-row items-center gap-2 mb-4 justify-start">
+            <div className="bg-red-600 rounded-full p-2 mr-3">
+              <Heart className="w-5 h-5 text-white " />
             </div>
             <div className='text-left'>
               <h1 className="text-3xl font-bold text-red-800">WIFE4LIFE</h1>
               <p className="text-sm text-gray-600">Marriage The Halal Way</p>
             </div>
           </div>
-          <p className="text-gray-600 text-sm">Begin your journey to find your perfect match</p>
+          <p className="text-gray-600 text-sm text-center">Begin your journey to find your perfect match</p>
         </div>
 
         {/* Form Container */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-6">
+        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-6">
           <div className="text-center mb-6">
             <h2 className="text-2xl font-bold text-gray-800 mb-2">Create Account</h2>
             <p className="text-gray-600 text-sm">Join our community and find your soulmate</p>
@@ -236,13 +243,8 @@ const Signup = () => {
           </div>
         </div>
 
-        {/* Back to Home Link */}
-        <div className="text-center">
-          <Link to='/' className="flex items-center justify-center text-gray-600 hover:text-gray-800 text-sm transition-colors mx-auto">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Home
-          </Link>
-        </div>
+  {/* Extra bottom space for mobile usability */}
+  <div className="h-8 sm:h-12" />
       </div>
     </div>
 

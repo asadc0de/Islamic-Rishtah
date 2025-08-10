@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import LoadingSpinner from '../components/LoadingSpinner';
+import ViewProfile from './ViewProfile';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -111,6 +113,7 @@ const professions = [
 const SearchPage = () => {
   const navigate = useNavigate();
   const [isGridView, setIsGridView] = useState(true);
+  const [viewProfileId, setViewProfileId] = useState(null);
   const [sortBy, setSortBy] = useState("Newest First");
   const [searchQuery, setSearchQuery] = useState("");
   const [ageRange, setAgeRange] = useState([18, 50]);
@@ -478,7 +481,7 @@ const SearchPage = () => {
         </div>
 
         <button 
-          onClick={() => navigate(`/view-profile/${profile.id}`)}
+          onClick={() => setViewProfileId(profile.id)}
           className="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded font-medium transition-colors"
         >
           <User className="w-4 h-4 inline mr-2" />
@@ -534,7 +537,7 @@ const SearchPage = () => {
         </div>
 
         <button 
-          onClick={() => navigate(`/view-profile/${profile.id}`)}
+          onClick={() => setViewProfileId(profile.id)}
           className="bg-red-500 hover:bg-red-600 text-white py-2 px-6 rounded font-medium transition-colors"
         >
           <User className="w-4 h-4 inline mr-2" />
@@ -542,6 +545,7 @@ const SearchPage = () => {
         </button>
       </div>
     </div>
+
   );
 
   const Dropdown = ({
@@ -591,204 +595,208 @@ const SearchPage = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading profiles...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner message="Loading profiles..." />;
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <AuthenticatedHeader />
+    <>
+      <div className="min-h-screen bg-white">
+        <AuthenticatedHeader />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col md:flex-row gap-8">
-          {/* Sidebar / Filters */}
-          <div className="w-full md:w-80 flex-shrink-0 mb-8 md:mb-0">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Search Filters
-                </h2>
-                <button 
-                  onClick={clearAllFilters}
-                  className="text-red-500 text-sm hover:text-red-600" 
-                  type="button"
-                >
-                  Clear All
-                </button>
-              </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex flex-col md:flex-row gap-8">
+            {/* Sidebar / Filters */}
+            <div className="w-full md:w-80 flex-shrink-0 mb-8 md:mb-0">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Search Filters
+                  </h2>
+                  <button 
+                    onClick={clearAllFilters}
+                    className="text-red-500 text-sm hover:text-red-600" 
+                    type="button"
+                  >
+                    Clear All
+                  </button>
+                </div>
 
-              <div className="space-y-6">
-                {/* Search Input */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Search by name, location, or profession
-                  </label>
-                  <div className="relative">
+                <div className="space-y-6">
+                  {/* Search Input */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Search by name, location, or profession
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search profiles..."
+                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500"
+                      />
+                      <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                    </div>
+                  </div>
+
+                  {/* Age Range */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Age Range: {ageRange[0]} - {ageRange[1]} years
+                    </label>
                     <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search profiles..."
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500"
+                      type="range"
+                      min="18"
+                      max="50"
+                      value={ageRange[1]}
+                      onChange={(e) =>
+                        setAgeRange([ageRange[0], parseInt(e.target.value, 10)])
+                      }
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                     />
-                    <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                  </div>
+
+                  {/* Country */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Country
+                    </label>
+                    <Dropdown
+                      value={selectedCountry}
+                      options={countries}
+                      onChange={setSelectedCountry}
+                      placeholder="Select Country"
+                    />
+                  </div>
+
+                  {/* Marital Status */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Marital Status
+                    </label>
+                    <Dropdown
+                      value={selectedMaritalStatus}
+                      options={maritalStatuses}
+                      onChange={setSelectedMaritalStatus}
+                      placeholder="Select Marital Status"
+                    />
+                  </div>
+
+                  {/* Education */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Education
+                    </label>
+                    <Dropdown
+                      value={selectedEducation}
+                      options={educationLevels}
+                      onChange={setSelectedEducation}
+                      placeholder="Select Education"
+                    />
+                  </div>
+
+                  {/* Profession */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Profession
+                    </label>
+                    <Dropdown
+                      value={selectedProfession}
+                      options={professions}
+                      onChange={setSelectedProfession}
+                      placeholder="Select Profession"
+                    />
                   </div>
                 </div>
-
-                {/* Age Range */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Age Range: {ageRange[0]} - {ageRange[1]} years
-                  </label>
-                  <input
-                    type="range"
-                    min="18"
-                    max="50"
-                    value={ageRange[1]}
-                    onChange={(e) =>
-                      setAgeRange([ageRange[0], parseInt(e.target.value, 10)])
-                    }
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-                  />
-                </div>
-
-                {/* Country */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Country
-                  </label>
-                  <Dropdown
-                    value={selectedCountry}
-                    options={countries}
-                    onChange={setSelectedCountry}
-                    placeholder="Select Country"
-                  />
-                </div>
-
-                {/* Marital Status */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Marital Status
-                  </label>
-                  <Dropdown
-                    value={selectedMaritalStatus}
-                    options={maritalStatuses}
-                    onChange={setSelectedMaritalStatus}
-                    placeholder="Select Marital Status"
-                  />
-                </div>
-
-                {/* Education */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Education
-                  </label>
-                  <Dropdown
-                    value={selectedEducation}
-                    options={educationLevels}
-                    onChange={setSelectedEducation}
-                    placeholder="Select Education"
-                  />
-                </div>
-
-                {/* Profession */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Profession
-                  </label>
-                  <Dropdown
-                    value={selectedProfession}
-                    options={professions}
-                    onChange={setSelectedProfession}
-                    placeholder="Select Profession"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Main Content */}
-          <div className="flex-1 w-full">
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">
-                  Search Profiles
-                </h2>
-                <p className="text-gray-600">
-                  Found {filteredProfiles.length} profiles matching your criteria
-                </p>
-              </div>
-
-              <div className="flex items-center space-x-4">
-                {/* Layout Toggle */}
-                <div className="flex bg-gray-100 rounded-lg p-1">
-                  <button
-                    type="button"
-                    onClick={() => setIsGridView(true)}
-                    className={`p-2 rounded ${
-                      isGridView
-                        ? "bg-red-500 text-white shadow-sm"
-                        : "text-gray-600 hover:text-gray-900"
-                    }`}
-                  >
-                    <Grid className="w-4 h-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setIsGridView(false)}
-                    className={`p-2 rounded ${
-                      !isGridView
-                        ? "bg-red-500 text-white shadow-sm"
-                        : "text-gray-600 hover:text-gray-900"
-                    }`}
-                  >
-                    <List className="w-4 h-4" />
-                  </button>
-                </div>
-
-                {/* Sort Dropdown */}
-                <Dropdown
-                  value={sortBy}
-                  options={sortOptions}
-                  onChange={setSortBy}
-                  placeholder="Sort by"
-                />
               </div>
             </div>
 
-            {/* Profiles Grid/List */}
-            {filteredProfiles.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="text-gray-400 mb-4">
-                  <Search className="w-16 h-16 mx-auto" />
+            {/* Main Content */}
+            <div className="flex-1 w-full">
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h2 className="text-lg sm:text-2xl font-bold text-gray-900 leading-tight sm:leading-snug">
+                    Search Profiles
+                  </h2>
+                  <p className="text-xs sm:text-base text-gray-600 mt-1 sm:mt-2">
+                    Found {filteredProfiles.length} profiles matching your criteria
+                  </p>
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No profiles found</h3>
-                <p className="text-gray-600">Try adjusting your search criteria</p>
+
+                <div className="flex items-center space-x-4">
+                  {/* Layout Toggle */}
+                  <div className="flex bg-gray-100 rounded-lg p-1">
+                    <button
+                      type="button"
+                      onClick={() => setIsGridView(true)}
+                      className={`p-2 rounded ${
+                        isGridView
+                          ? "bg-red-500 text-white shadow-sm"
+                          : "text-gray-600 hover:text-gray-900"
+                      }`}
+                    >
+                      <Grid className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsGridView(false)}
+                      className={`p-2 rounded ${
+                        !isGridView
+                          ? "bg-red-500 text-white shadow-sm"
+                          : "text-gray-600 hover:text-gray-900"
+                      }`}
+                    >
+                      <List className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* Sort Dropdown */}
+                  <Dropdown
+                    value={sortBy}
+                    options={sortOptions}
+                    onChange={setSortBy}
+                    placeholder="Sort by"
+                  />
+                </div>
               </div>
-            ) : isGridView ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProfiles.map((profile) => (
-                  <ProfileCard key={profile.id} profile={profile} />
-                ))}
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {filteredProfiles.map((profile) => (
-                  <ProfileListItem key={profile.id} profile={profile} />
-                ))}
-              </div>
-            )}
+
+              {/* Profiles Grid/List */}
+              {filteredProfiles.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="text-gray-400 mb-4">
+                    <Search className="w-16 h-16 mx-auto" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No profiles found</h3>
+                  <p className="text-gray-600">Try adjusting your search criteria</p>
+                </div>
+              ) : isGridView ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredProfiles.map((profile) => (
+                    <ProfileCard key={profile.id} profile={profile} />
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {filteredProfiles.map((profile) => (
+                    <ProfileListItem key={profile.id} profile={profile} />
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      {/* Modal Overlay for ViewProfile */}
+      {viewProfileId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black bg-opacity-50 transition-opacity" onClick={() => setViewProfileId(null)} />
+          <div className="relative z-10 w-full max-w-4xl mx-auto">
+            <ViewProfile userId={viewProfileId} onClose={() => setViewProfileId(null)} />
+          </div>
+        </div>
+      )}
+    </>
   );
-};
+}
 
 export default SearchPage;

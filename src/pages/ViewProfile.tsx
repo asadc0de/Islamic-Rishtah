@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import LoadingSpinner from '../components/LoadingSpinner';
 import { X, MapPin, Building, GraduationCap, Heart, User, Clock, Calendar, Baby, Home, Users } from 'lucide-react';
-import { useParams, useNavigate } from 'react-router-dom';
+// Accept userId and onClose as props for modal usage
 import { doc, getDoc, updateDoc, increment } from 'firebase/firestore';
 import { db, realtimeDb } from '../firebase/firebase';
 import { ref as dbRef, onValue } from 'firebase/database';
@@ -36,25 +37,24 @@ interface ProfileData {
   };
 }
 
-function ViewProfile() {
+interface ViewProfileProps {
+  userId: string;
+  onClose?: () => void;
+}
+
+function ViewProfile({ userId, onClose }: ViewProfileProps) {
   const [onlineStatus, setOnlineStatus] = useState<'online' | 'offline'>('offline');
-  // (keep only one getProfileImage, use the existing one below)
-  // Helper to display Sunni label correctly
   function getSunniLabel(val?: string) {
     if (!val) return 'Muslim';
     if (val.toLowerCase() === 'yes-sunni' || val.toLowerCase() === 'yes sunni') return 'Sunni';
     return val;
   }
-  const { userId } = useParams<{ userId: string }>();
-  const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('About');
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!userId) return;
-    // Listen for online status of viewed user
     const statusRef = dbRef(realtimeDb, '/status/' + userId);
     const unsubscribeStatus = onValue(statusRef, (snap) => {
       setOnlineStatus((snap.val()?.state === 'online') ? 'online' : 'offline');
@@ -65,7 +65,6 @@ function ViewProfile() {
         const profileDoc = await getDoc(doc(db, 'userProfileData', userId));
         if (profileDoc.exists()) {
           setProfileData(profileDoc.data() as ProfileData);
-          // Increment profile view only after data is loaded, and only once
           if (!incremented) {
             const currentUser = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
             if (currentUser?.uid !== userId) {
@@ -81,28 +80,23 @@ function ViewProfile() {
           }
         } else {
           toast.error('Profile not found');
-          navigate('/search');
+          if (onClose) onClose();
         }
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast.error('Failed to load profile');
-        navigate('/search');
+        if (onClose) onClose();
       } finally {
         setLoading(false);
       }
     };
     fetchProfileData();
     return () => unsubscribeStatus();
-  }, [userId, navigate]);
+  }, [userId]);
+
 
   const closeModal = () => {
-    setIsModalOpen(false);
-    navigate('/search');
-  };
-
-  const openModal = () => {
-    setIsModalOpen(true);
-    setActiveTab('About');
+    if (onClose) onClose();
   };
 
   const calculateAge = (dateOfBirth: string) => {
@@ -128,11 +122,7 @@ function ViewProfile() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-gray-900 text-xl">Loading profile...</div>
-      </div>
-    );
+    return <LoadingSpinner message="Loading profile..." />;
   }
 
   if (!profileData) {
@@ -143,23 +133,12 @@ function ViewProfile() {
     );
   }
 
-  if (!isModalOpen) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <button
-          onClick={openModal}
-          className="bg-red-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors"
-        >
-          View Profile Details
-        </button>
-      </div>
-    );
-  }
+
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4">
       {/* Modal Overlay */}
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={closeModal}></div>
+  <div className="fixed inset-0 bg-black bg-opacity-50 z-40" style={{backdropFilter: 'blur(1px)'}} onClick={closeModal}></div>
       
       {/* Modal */}
       <div className="relative bg-white rounded-lg shadow-xl w-full max-w-4xl z-50 max-h-[90vh] overflow-y-auto">
@@ -176,8 +155,8 @@ function ViewProfile() {
 
         <div className="flex flex-col lg:flex-row">
           {/* Left Side - Profile Image */}
-          <div className="lg:w-1/3 p-6">
-            <div className="bg-gray-200 rounded-lg h-80 flex items-center justify-center text-gray-400 overflow-hidden">
+          <div className="lg:w-1/3 p-6 flex justify-center items-start">
+            <div className="bg-gray-200 rounded-lg w-32 h-32 sm:w-40 sm:h-40 flex items-center justify-center text-gray-400 overflow-hidden">
               {getProfileImage() ? (
                 <img
                   src={getProfileImage() || undefined}
@@ -186,8 +165,8 @@ function ViewProfile() {
                 />
               ) : (
                 <div className="text-center">
-                  <User size={64} className="mx-auto mb-2" />
-                  <p className="text-sm">Profile Image</p>
+                  <User size={48} className="mx-auto mb-2" />
+                  <p className="text-xs">Profile Image</p>
                 </div>
               )}
             </div>
@@ -237,12 +216,12 @@ function ViewProfile() {
             </div>
 
             {/* Tab Navigation */}
-            <div className="flex border-b border-gray-200 mb-6">
+            <div className="flex justify-between border-b border-gray-200 mb-6 overflow-x-auto no-scrollbar">
               {['About', 'Preferences', 'Lifestyle'].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-4 py-2 font-medium transition-colors ${
+                  className={`px-3 sm:px-4 py-2 font-medium transition-colors text-xs sm:text-base whitespace-nowrap ${
                     activeTab === tab
                       ? 'text-black border-b-2 border-black'
                       : 'text-gray-600 hover:text-gray-800'
@@ -254,7 +233,7 @@ function ViewProfile() {
             </div>
 
             {/* Tab Content */}
-            <div className="space-y-6">
+            <div className="space-y-6 text-xs sm:text-base">
               {/* About Tab */}
               {activeTab === 'About' && (
                 <>

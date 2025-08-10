@@ -58,15 +58,15 @@ const Header = () => {
         {/* Mobile Menu */}
         {menuOpen && (
           <div className="md:hidden mt-2 space-y-3 bg-white shadow rounded-lg p-4">
-            <a href="#" className="block text-gray-600 hover:text-gray-900">
+            <a href="#howitworks" className="block text-gray-600 hover:text-gray-900">
               How It Works
             </a>
-            <a href="#" className="block text-red-500 hover:text-red-600 font-medium">
+            <Link to={'/login'} className="block text-red-500 hover:text-red-600 font-medium">
               Login
-            </a>
-            <button className="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md font-medium transition-colors">
+            </Link>
+            <Link to={'/signup'} className="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md font-medium transition-colors">
               Sign Up
-            </button>
+            </Link>
           </div>
         )}
       </div>

@@ -1,5 +1,4 @@
 import { CheckCircle, Crown } from "lucide-react";
-import React from "react";
 import { Link } from "react-router-dom";
 
 const HeroSection = () => {
@@ -24,14 +23,14 @@ const HeroSection = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
             <Link
               to="/signup"
-              className="bg-red-500 hover:bg-red-600 text-white px-8 py-4 rounded-md font-semibold text-lg transition-colors min-w-[180px]"
+              className="bg-red-500 hover:bg-red-600 text-white px-8 py-2 rounded-md font-semibold text-lg transition-colors min-w-[180px]"
             >
               Sign Up Today
             </Link>
             <Link>
               <button
                 to=""
-                className="cursor-pointer border-2 border-red-500 text-red-500 hover:bg-red-50 px-8 py-4 rounded-md font-semibold text-lg transition-colors min-w-[180px]"
+                className="cursor-pointer border-2 border-red-500 text-red-500 hover:bg-red-50 px-8 py-2 rounded-md font-semibold text-lg transition-colors min-w-[180px]"
               >
                 Browse Profiles
               </button>

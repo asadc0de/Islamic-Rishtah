@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Heart, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Heart, Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Use React Router's navigation instead of window.location
@@ -74,15 +74,22 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FEF3F3] flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#FEF3F3] flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pb-16">
+      {/* Back to Home Link (top) */}
+      <div className="w-full max-w-md mx-auto mt-2 mb-4">
+        <Link to='/' className="flex items-center text-gray-600 hover:text-gray-800 text-sm transition-colors w-fit">
+          <ArrowLeft className="w-5 h-5 mr-2" />
+          Back to Home
+        </Link>
+      </div>
       {/* Logo and Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-center mr-60 mt-4">
+      <div className="mb-8 w-full max-w-md mx-auto">
+        <div className="flex flex-row items-center gap-2 mb-4 justify-start">
           <div className="bg-red-600 rounded-full p-2 mr-3">
-            <Heart className="w-6 h-6 text-white " />
+            <Heart className="w-5 h-5 text-white " />
           </div>
           <div className="text-left">
-            <h1 className="text-2xl font-bold text-red-900">WIFE4LIFE</h1>
+            <h1 className="text-3xl font-bold text-red-900">WIFE4LIFE</h1>
             <p className="text-sm text-gray-600">Marriage The Halal Way</p>
           </div>
         </div>
@@ -97,7 +104,7 @@ const Login = () => {
 
       {/* Sign In Form */}
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+        <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8 border border-gray-200">
           <div className="mb-8">
             <h3 className="text-2xl font-bold text-gray-900 mb-2">Sign In</h3>
             <p className="text-gray-600">
@@ -227,14 +234,14 @@ const Login = () => {
         {/* Terms and Privacy */}
         <div className="text-center mt-6">
           <p className="text-sm text-gray-500">
-            By signing in, you agree to our{" "}
+            By signing in, you agree to our{' '}
             <a
               href="#"
               className="text-red-600 hover:text-red-500 transition-colors"
             >
               Terms of Service
-            </a>{" "}
-            and{" "}
+            </a>{' '}
+            and{' '}
             <a
               href="#"
               className="text-red-600 hover:text-red-500 transition-colors"
@@ -243,6 +250,8 @@ const Login = () => {
             </a>
           </p>
         </div>
+        {/* Extra bottom space for mobile usability */}
+        <div className="h-8 sm:h-12" />
       </div>
     </div>
   );

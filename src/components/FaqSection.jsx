@@ -99,10 +99,10 @@ const FAQ = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div id='faq' className="min-h-screen bg-gradient-to-br from-red-50 to-pink-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="bg-[#C31F1F] rounded-lg p-4 text-center shadow-lg mb-6">
+        <div  className="bg-[#C31F1F] rounded-lg p-4 text-center shadow-lg mb-6">
           <div className="flex items-center justify-center mb-1">
             <HelpCircle className="w-6 h-6 text-white mr-2" />
             <h1 className="text-xl font-bold text-white">FAQ</h1>
