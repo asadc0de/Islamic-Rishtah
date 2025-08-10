@@ -1,5 +1,5 @@
 
- import React, { useState } from 'react';
+ import React, { useEffect, useState } from 'react';
 import { Heart, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -11,6 +11,11 @@ import { ref, set } from 'firebase/database';
 import { realtimeDb } from '../firebase/firebase';
 
 const Signup = () => {
+
+  useEffect(() => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}, []);
+
   const [creatingAccount, setCreatingAccount] = useState(false);
   const navigate = useNavigate();
      

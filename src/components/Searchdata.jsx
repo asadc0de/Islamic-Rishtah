@@ -1,5 +1,6 @@
 import { Search } from 'lucide-react'
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 const Searchdata = () => {
   return (
@@ -67,10 +68,10 @@ const Searchdata = () => {
           </div>
 
           {/* Search Button */}
-          <button className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 shadow-sm">
+          <Link to="/signup" className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 shadow-sm">
             <Search className="w-5 h-5" />
             Search Profiles
-          </button>
+          </Link>
         </div>
       </div>
     </div>

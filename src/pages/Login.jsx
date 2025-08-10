@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Heart, Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css"; // Use React Router's navigation
 import { useNavigate } from "react-router-dom";
 import { auth, realtimeDb } from "../firebase/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { ref, get, set } from 'firebase/database';
+import { ref, get, set } from "firebase/database";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -15,6 +15,10 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [signingIn, setSigningIn] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,29 +29,33 @@ const Login = () => {
     setSigningIn(true);
     try {
       console.log("Attempting login...");
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
       console.log("Login successful, user:", user.uid);
       // Fetch user data from Realtime Database
-      const userRef = ref(realtimeDb, 'users/' + user.uid);
+      const userRef = ref(realtimeDb, "users/" + user.uid);
       const snapshot = await get(userRef);
       if (snapshot.exists()) {
         const userData = snapshot.val();
         console.log("User data from Realtime DB:", userData);
         // Store user data in localStorage for app use
-        localStorage.setItem('loggedInUser', JSON.stringify(userData));
+        localStorage.setItem("loggedInUser", JSON.stringify(userData));
         // Save basic user info to profile in Realtime Database
         const profileData = {
-          username: userData.username || '',
-          email: userData.email || '',
-          phone: userData.phone || '',
+          username: userData.username || "",
+          email: userData.email || "",
+          phone: userData.phone || "",
           lastLogin: new Date().toISOString(),
-          loginCount: (userData.loginCount || 0) + 1
+          loginCount: (userData.loginCount || 0) + 1,
         };
         // Update user data with profile info
-        await set(ref(realtimeDb, 'users/' + user.uid), {
+        await set(ref(realtimeDb, "users/" + user.uid), {
           ...userData,
-          ...profileData
+          ...profileData,
         });
         console.log("Profile data saved:", profileData);
       } else {
@@ -60,9 +68,9 @@ const Login = () => {
       console.error("Login error:", error);
       // Show a user-friendly error for all invalid credential errors
       if (
-        error.code === 'auth/user-not-found' ||
-        error.code === 'auth/wrong-password' ||
-        error.code === 'auth/invalid-credential'
+        error.code === "auth/user-not-found" ||
+        error.code === "auth/wrong-password" ||
+        error.code === "auth/invalid-credential"
       ) {
         toast.error("Invalid email or password");
       } else {
@@ -77,7 +85,10 @@ const Login = () => {
     <div className="min-h-screen bg-[#FEF3F3] flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pb-16">
       {/* Back to Home Link (top) */}
       <div className="w-full max-w-md mx-auto mt-2 mb-4">
-        <Link to='/' className="flex items-center text-gray-600 hover:text-gray-800 text-sm transition-colors w-fit">
+        <Link
+          to="/"
+          className="flex items-center text-gray-600 hover:text-gray-800 text-sm transition-colors w-fit"
+        >
           <ArrowLeft className="w-5 h-5 mr-2" />
           Back to Home
         </Link>
@@ -212,7 +223,7 @@ const Login = () => {
                 className="w-full flex justify-center py-3 px-4 border border-transparent text-base font-semibold rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200 shadow-sm disabled:opacity-60"
                 disabled={signingIn}
               >
-                {signingIn ? 'Signing in...' : 'Sign In'}
+                {signingIn ? "Signing in..." : "Sign In"}
               </button>
             </div>
 
@@ -234,14 +245,14 @@ const Login = () => {
         {/* Terms and Privacy */}
         <div className="text-center mt-6">
           <p className="text-sm text-gray-500">
-            By signing in, you agree to our{' '}
+            By signing in, you agree to our{" "}
             <a
               href="#"
               className="text-red-600 hover:text-red-500 transition-colors"
             >
               Terms of Service
-            </a>{' '}
-            and{' '}
+            </a>{" "}
+            and{" "}
             <a
               href="#"
               className="text-red-600 hover:text-red-500 transition-colors"

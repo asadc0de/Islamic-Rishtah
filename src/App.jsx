@@ -12,6 +12,9 @@ import Login from './pages/Login';
 import Signup from './pages/Signup'; // make sure this file exists
 import ViewProfile from './pages/ViewProfile';
 import ForgotPassword from './pages/ForgotPassword';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsConditions from './pages/TermsConditions';
+import CookiePolicy from './pages/CookiePolicy';
 
 function App() {
   return (
@@ -25,6 +28,9 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/termsandconditions" element={<TermsConditions />} />
+            <Route path="/cookie-policy" element={<CookiePolicy />} />
             <Route path="/complete-profile" element={<ProfileCompletion />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/view-profile/:userId" element={<ViewProfile />} />
