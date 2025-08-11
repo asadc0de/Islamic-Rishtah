@@ -1,54 +1,52 @@
-import React, { useState } from 'react';
-import { Briefcase } from 'lucide-react';
-import { FormField } from './FormField';
-import { CustomDropdown } from './CustomDropdown';
+import React, { useState } from "react";
+import { Briefcase } from "lucide-react";
+import { FormField } from "./FormField";
+import { CustomDropdown } from "./CustomDropdown";
 
 interface CareerEducationData {
   education: string;
   occupation: string;
   income: string;
-  employmentStatus: string;
 }
 
 interface CareerEducationStepProps {
   data: CareerEducationData;
   onChange: (data: Partial<CareerEducationData>) => void;
   showErrors?: boolean;
+  errors?: any;
 }
 
-export const CareerEducationStep: React.FC<CareerEducationStepProps> = ({ data, onChange }) => {
+export const CareerEducationStep: React.FC<CareerEducationStepProps> = ({
+  data,
+  onChange,
+  showErrors,
+  errors = {},
+}) => {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  
+
   const educationOptions = [
-    { value: 'high-school', label: 'High School' },
-    { value: 'bachelors', label: "Bachelor's Degree" },
-    { value: 'masters', label: "Master's Degree" },
-    { value: 'phd', label: 'PhD' },
-    { value: 'diploma', label: 'Diploma' },
-    { value: 'other', label: 'Other' }
+    { value: "high-school", label: "High School" },
+    { value: "bachelors", label: "Bachelor's Degree" },
+    { value: "masters", label: "Master's Degree" },
+    { value: "phd", label: "PhD" },
+    { value: "diploma", label: "Diploma" },
+    { value: "other", label: "Other" },
   ];
   const occupationOptions = [
-    { value: 'engineer', label: 'Engineer' },
-    { value: 'doctor', label: 'Doctor' },
-    { value: 'teacher', label: 'Teacher' },
-    { value: 'business', label: 'Business Professional' },
-    { value: 'student', label: 'Student' },
-    { value: 'other', label: 'Other' },
+    { value: "engineer", label: "Engineer" },
+    { value: "doctor", label: "Doctor" },
+    { value: "teacher", label: "Teacher" },
+    { value: "business", label: "Business Professional" },
+    { value: "student", label: "Student" },
+    { value: "other", label: "Other" },
   ];
 
   const incomeOptions = [
-    { value: 'under-30k', label: 'Under $30,000' },
-    { value: '30k-50k', label: '$30,000 - $50,000' },
-    { value: '50k-75k', label: '$50,000 - $75,000' },
-    { value: '75k-100k', label: '$75,000 - $100,000' },
-    { value: 'over-100k', label: 'Over $100,000' },
-  ];
-
-  const employmentOptions = [
-    { value: 'employed', label: 'Employed' },
-    { value: 'self-employed', label: 'Self Employed' },
-    { value: 'student', label: 'Student' },
-    { value: 'unemployed', label: 'Unemployed' },
+    { value: "under-30k", label: "Under $30,000" },
+    { value: "30k-50k", label: "$30,000 - $50,000" },
+    { value: "50k-75k", label: "$50,000 - $75,000" },
+    { value: "75k-100k", label: "$75,000 - $100,000" },
+    { value: "over-100k", label: "Over $100,000" },
   ];
 
   const handleDropdownToggle = (dropdownId: string, isOpen: boolean) => {
@@ -60,46 +58,65 @@ export const CareerEducationStep: React.FC<CareerEducationStepProps> = ({ data, 
       <div className="flex items-center gap-2 mb-4">
         <Briefcase className="text-red-600" size={18} />
         <div>
-          <h2 className="text-base font-bold text-gray-900">Career & Education</h2>
-          <p className="text-xs text-gray-600">Share your professional and educational background</p>
+          <h2 className="text-base font-bold text-gray-900">
+            Career & Education
+          </h2>
+          <p className="text-xs text-gray-600">
+            Share your professional and educational background
+          </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FormField label="Education Level" required>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <FormField
+          label="Education Level"
+          required
+          error={showErrors ? errors.education : undefined}
+        >
           <CustomDropdown
             options={educationOptions}
             value={data.education}
             placeholder="Select Education Level"
             onChange={(value) => onChange({ education: value })}
-            isOpen={openDropdown === 'education'}
-            onToggle={(isOpen) => handleDropdownToggle('education', isOpen)}
+            isOpen={openDropdown === "education"}
+            onToggle={(isOpen) => handleDropdownToggle("education", isOpen)}
           />
         </FormField>
 
-        <FormField label="Occupation" required>
+        <FormField
+          label="Occupation"
+          required
+          error={showErrors ? errors.occupation : undefined}
+        >
           <CustomDropdown
             options={occupationOptions}
             value={data.occupation}
             placeholder="Select Occupation"
             onChange={(value) => onChange({ occupation: value })}
-            isOpen={openDropdown === 'occupation'}
-            onToggle={(isOpen) => handleDropdownToggle('occupation', isOpen)}
+            isOpen={openDropdown === "occupation"}
+            onToggle={(isOpen) => handleDropdownToggle("occupation", isOpen)}
           />
         </FormField>
 
-        <FormField label="Annual Income" required>
-          <CustomDropdown
-            options={incomeOptions}
-            value={data.income}
-            placeholder="Select Income Range"
-            onChange={(value) => onChange({ income: value })}
-            isOpen={openDropdown === 'income'}
-            onToggle={(isOpen) => handleDropdownToggle('income', isOpen)}
-          />
-        </FormField>
+        <div className="md:col-span-2">
+          <FormField
+            label="Annual Income"
+            required
+            error={showErrors ? errors.income : undefined}
+          >
+            <CustomDropdown
+              options={incomeOptions}
+              value={data.income}
+              placeholder="Select Income Range"
+              onChange={(value) => onChange({ income: value })}
+              isOpen={openDropdown === "income"}
+              onToggle={(isOpen) => handleDropdownToggle("income", isOpen)}
+              className="w-full"
+            />
+          </FormField>
+        </div>
 
-        <FormField label="Employment Status" required>
+        {/* <FormField label="Employment Status" required error={showErrors ? errors.employmentStatus : undefined}>
           <CustomDropdown
             options={employmentOptions}
             value={data.employmentStatus}
@@ -108,7 +125,7 @@ export const CareerEducationStep: React.FC<CareerEducationStepProps> = ({ data, 
             isOpen={openDropdown === 'employment'}
             onToggle={(isOpen) => handleDropdownToggle('employment', isOpen)}
           />
-        </FormField>
+        </FormField> */}
       </div>
     </div>
   );

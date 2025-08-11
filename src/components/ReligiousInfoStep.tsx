@@ -16,9 +16,10 @@ interface ReligiousInfoStepProps {
   data: ReligiousInfoData;
   onChange: (data: Partial<ReligiousInfoData>) => void;
   showErrors?: boolean;
+  errors?: any;
 }
 
-export const ReligiousInfoStep: React.FC<ReligiousInfoStepProps> = ({ data, onChange }) => {
+export const ReligiousInfoStep: React.FC<ReligiousInfoStepProps> = ({ data, onChange, showErrors, errors = {} }) => {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   
   const sunniOptions = [
@@ -72,7 +73,7 @@ export const ReligiousInfoStep: React.FC<ReligiousInfoStepProps> = ({ data, onCh
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FormField label="Are you a Sunni Muslim?" required>
+  <FormField label="Are you a Sunni Muslim?" required error={showErrors ? errors.sunniMuslim : undefined}>
           <CustomDropdown
             options={sunniOptions}
             value={data.sunniMuslim}
@@ -83,7 +84,7 @@ export const ReligiousInfoStep: React.FC<ReligiousInfoStepProps> = ({ data, onCh
           />
         </FormField>
 
-        <FormField label="Are You a Revert Muslim?" required>
+  <FormField label="Are You a Revert Muslim?" required error={showErrors ? errors.revertMuslim : undefined}>
           <CustomDropdown
             options={revertOptions}
             value={data.revertMuslim}
@@ -94,7 +95,7 @@ export const ReligiousInfoStep: React.FC<ReligiousInfoStepProps> = ({ data, onCh
           />
         </FormField>
 
-        <FormField label="Prayer Frequency" required>
+  <FormField label="Prayer Frequency" required error={showErrors ? errors.prayerFrequency : undefined}>
           <CustomDropdown
             options={prayerOptions}
             value={data.prayerFrequency}
@@ -105,7 +106,7 @@ export const ReligiousInfoStep: React.FC<ReligiousInfoStepProps> = ({ data, onCh
           />
         </FormField>
 
-        <FormField label="Quran Reading" required>
+  <FormField label="Quran Reading" required error={showErrors ? errors.quranReading : undefined}>
           <CustomDropdown
             options={quranOptions}
             value={data.quranReading}
@@ -116,7 +117,7 @@ export const ReligiousInfoStep: React.FC<ReligiousInfoStepProps> = ({ data, onCh
           />
         </FormField>
 
-        <FormField label="Hijab" required>
+  <FormField label="Hijab" required error={showErrors ? errors.hijab : undefined}>
           <CustomDropdown
             options={hijabOptions}
             value={data.hijab}
@@ -127,7 +128,7 @@ export const ReligiousInfoStep: React.FC<ReligiousInfoStepProps> = ({ data, onCh
           />
         </FormField>
 
-        <FormField label="Beard" required>
+  <FormField label="Beard" required error={showErrors ? errors.beard : undefined}>
           <CustomDropdown
             options={beardOptions}
             value={data.beard}

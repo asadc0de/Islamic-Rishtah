@@ -17,9 +17,10 @@ interface PersonalInfoStepProps {
   data: PersonalInfoData;
   onChange: (data: Partial<PersonalInfoData>) => void;
   showErrors?: boolean;
+  errors?: any;
 }
 
-export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onChange }) => {
+export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onChange, showErrors, errors = {} }) => {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   
   const genderOptions = [
@@ -45,7 +46,8 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onChan
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FormField label="First Name" required>
+
+        <FormField label="First Name" required error={showErrors ? errors.firstName : undefined}>
           <input
             type="text"
             value={data.firstName}
@@ -55,7 +57,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onChan
           />
         </FormField>
 
-        <FormField label="Last Name" required>
+        <FormField label="Last Name" required error={showErrors ? errors.lastName : undefined}>
           <input
             type="text"
             value={data.lastName}
@@ -65,7 +67,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onChan
           />
         </FormField>
 
-        <FormField label="Date of Birth" required>
+        <FormField label="Date of Birth" required error={showErrors ? errors.dateOfBirth : undefined}>
           <input
             type="date"
             value={data.dateOfBirth}
@@ -75,7 +77,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onChan
           />
         </FormField>
 
-        <FormField label="Gender" required>
+        <FormField label="Gender" required error={showErrors ? errors.gender : undefined}>
           <CustomDropdown
             options={genderOptions}
             value={data.gender}
@@ -87,7 +89,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onChan
         </FormField>
       </div>
 
-      <FormField label="About Me" required>
+      <FormField label="About Me" required error={showErrors ? errors.aboutMe : undefined}>
         <textarea
           value={data.aboutMe}
           onChange={(e) => onChange({ aboutMe: e.target.value })}
@@ -97,7 +99,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onChan
         />
       </FormField>
 
-      <FormField label="Expectations" required>
+      <FormField label="Expectations" required error={showErrors ? errors.expectations : undefined}>
         <textarea
           value={data.expectations}
           onChange={(e) => onChange({ expectations: e.target.value })}
@@ -107,7 +109,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onChan
         />
       </FormField>
 
-      <FormField label="Health Conditions" required>
+      <FormField label="Health Conditions" required error={showErrors ? errors.healthConditions : undefined}>
         <textarea
           value={data.healthConditions}
           onChange={(e) => onChange({ healthConditions: e.target.value })}

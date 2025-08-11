@@ -18,9 +18,10 @@ interface FamilyBackgroundStepProps {
   data: FamilyBackgroundData;
   onChange: (data: Partial<FamilyBackgroundData>) => void;
   showErrors?: boolean;
+  errors?: any;
 }
 
-export const FamilyBackgroundStep: React.FC<FamilyBackgroundStepProps> = ({ data, onChange }) => {
+export const FamilyBackgroundStep: React.FC<FamilyBackgroundStepProps> = ({ data, onChange, showErrors, errors = {} }) => {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   
   const maritalOptions = [
@@ -34,9 +35,9 @@ export const FamilyBackgroundStep: React.FC<FamilyBackgroundStepProps> = ({ data
     { value: 'no', label: 'No' },
     { value: '1', label: '1 Child' },
     { value: '2', label: '2 Childs' },
-    { value: '3+', label: '3 Children +' },
+    { value: '3+', label: '3+ Children' },
   ];
-
+  
   const wantChildrenOptions = [
     { value: 'yes', label: 'Yes' },
     { value: 'no', label: 'No' },
@@ -206,7 +207,7 @@ export const FamilyBackgroundStep: React.FC<FamilyBackgroundStepProps> = ({ data
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FormField label="Marital Status" required>
+  <FormField label="Marital Status" required error={showErrors ? errors.maritalStatus : undefined}>
           <CustomDropdown
             options={maritalOptions}
             value={data.maritalStatus}
@@ -217,7 +218,7 @@ export const FamilyBackgroundStep: React.FC<FamilyBackgroundStepProps> = ({ data
           />
         </FormField>
 
-        <FormField label="Children" required>
+  <FormField label="Children" required error={showErrors ? errors.children : undefined}>
           <CustomDropdown
             options={childrenOptions}
             value={data.children}
@@ -228,7 +229,7 @@ export const FamilyBackgroundStep: React.FC<FamilyBackgroundStepProps> = ({ data
           />
         </FormField>
 
-        <FormField label="Want Children" required>
+  <FormField label="Want Children" required error={showErrors ? errors.wantChildren : undefined}>
           <CustomDropdown
             options={wantChildrenOptions}
             value={data.wantChildren}
@@ -239,7 +240,7 @@ export const FamilyBackgroundStep: React.FC<FamilyBackgroundStepProps> = ({ data
           />
         </FormField>
 
-        <FormField label="Nationality" required>
+  <FormField label="Nationality" required error={showErrors ? errors.nationality : undefined}>
           <CustomDropdown
             options={nationalityOptions}
             value={data.nationality}
@@ -250,7 +251,7 @@ export const FamilyBackgroundStep: React.FC<FamilyBackgroundStepProps> = ({ data
           />
         </FormField>
 
-        <FormField label="Mother Tongue" required>
+  <FormField label="Mother Tongue" required error={showErrors ? errors.motherTongue : undefined}>
           <CustomDropdown
             options={motherTongueOptions}
             value={data.motherTongue}
@@ -271,7 +272,7 @@ export const FamilyBackgroundStep: React.FC<FamilyBackgroundStepProps> = ({ data
           />
         </FormField>
 
-        <FormField label="Country" required>
+  <FormField label="Country" required error={showErrors ? errors.country : undefined}>
           <CustomDropdown
             options={countryOptions}
             value={data.country}
@@ -282,7 +283,7 @@ export const FamilyBackgroundStep: React.FC<FamilyBackgroundStepProps> = ({ data
           />
         </FormField>
 
-        <FormField label="City" required>
+  <FormField label="City" required error={showErrors ? errors.city : undefined}>
           <input
             type="text"
             value={data.city}

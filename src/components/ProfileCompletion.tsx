@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { StepIndicator } from './StepIndicator';
 import { ProgressBar } from './ProgressBar';
 import { TabNavigation } from './TabNavigation';
@@ -55,11 +55,17 @@ export const ProfileCompletion: React.FC = () => {
   const [showErrors, setShowErrors] = useState(false);
   const [creatingProfile, setCreatingProfile] = useState(false);
 
+  // Set default date of birth to 18 years ago
+  const getDefaultDOB = () => {
+    const today = new Date();
+    today.setFullYear(today.getFullYear() - 18);
+    return today.toISOString().split('T')[0];
+  };
   const [formData, setFormData] = useState<FormData>({
     personalInfo: {
       firstName: '',
       lastName: '',
-      dateOfBirth: '',
+      dateOfBirth: getDefaultDOB(),
       gender: '',
       aboutMe: '',
       expectations: '',
@@ -98,77 +104,84 @@ export const ProfileCompletion: React.FC = () => {
     }));
   };
 
-  // Validation functions for each step
+  // Validation functions for each step, return error objects
   const validatePersonalInfo = (data: FormData['personalInfo']) => {
-    if (!data.firstName || !data.lastName || !data.dateOfBirth || !data.gender || !data.aboutMe || !data.expectations || !data.healthConditions) {
-      toast.error('All fields are required.');
-      return false;
+    const errors: any = {};
+    if (!data.firstName) errors.firstName = 'First name is required.';
+    if (!data.lastName) errors.lastName = 'Last name is required.';
+    if (!data.dateOfBirth) errors.dateOfBirth = 'Date of birth is required.';
+    else {
+      const dob = new Date(data.dateOfBirth);
+      const today = new Date();
+      const age = today.getFullYear() - dob.getFullYear();
+      const m = today.getMonth() - dob.getMonth();
+      const day = today.getDate() - dob.getDate();
+      let is18 = age > 18 || (age === 18 && (m > 0 || (m === 0 && day >= 0)));
+      if (!is18) errors.dateOfBirth = 'You must be at least 18 years old.';
+      if (dob > today) errors.dateOfBirth = 'Date of birth cannot be in the future.';
     }
-    // Age validation
-    const dob = new Date(data.dateOfBirth);
-    const today = new Date();
-    const age = today.getFullYear() - dob.getFullYear();
-    const m = today.getMonth() - dob.getMonth();
-    const day = today.getDate() - dob.getDate();
-    let is18 = age > 18 || (age === 18 && (m > 0 || (m === 0 && day >= 0)));
-    if (!is18) {
-      toast.error('You are under 18. You cannot create an account.');
-      return false;
-    }
-    // Prevent future dates
-    if (dob > today) {
-      toast.error('Date of birth cannot be in the future.');
-      return false;
-    }
-    return true;
+    if (!data.gender) errors.gender = 'Gender is required.';
+    if (!data.aboutMe) errors.aboutMe = 'About Me is required.';
+    if (!data.expectations) errors.expectations = 'Expectations are required.';
+    if (!data.healthConditions) errors.healthConditions = 'Health conditions are required.';
+    return errors;
   };
   const validateReligiousInfo = (data: FormData['religiousInfo']) => {
-    return (
-      data.sunniMuslim &&
-      data.revertMuslim &&
-      data.prayerFrequency &&
-      data.quranReading &&
-      data.hijab &&
-      data.beard
-    );
+    const errors: any = {};
+    if (!data.sunniMuslim) errors.sunniMuslim = 'Required.';
+    if (!data.revertMuslim) errors.revertMuslim = 'Required.';
+    if (!data.prayerFrequency) errors.prayerFrequency = 'Required.';
+    if (!data.quranReading) errors.quranReading = 'Required.';
+    if (!data.hijab) errors.hijab = 'Required.';
+    if (!data.beard) errors.beard = 'Required.';
+    return errors;
   };
   const validateFamilyBackground = (data: FormData['familyBackground']) => {
-    return (
-      data.maritalStatus &&
-      data.children &&
-      data.wantChildren &&
-      data.nationality &&
-      data.motherTongue &&
-      data.country &&
-      data.city
-    );
+    const errors: any = {};
+    if (!data.maritalStatus) errors.maritalStatus = 'Required.';
+    if (!data.children) errors.children = 'Required.';
+    if (!data.wantChildren) errors.wantChildren = 'Required.';
+    if (!data.nationality) errors.nationality = 'Required.';
+    if (!data.motherTongue) errors.motherTongue = 'Required.';
+    if (!data.country) errors.country = 'Required.';
+    if (!data.city) errors.city = 'Required.';
+    return errors;
   };
   const validateCareerEducation = (data: FormData['careerEducation']) => {
-    return (
-      data.education &&
-      data.occupation &&
-      data.income &&
-      data.employmentStatus
-    );
+    const errors: any = {};
+    if (!data.education) errors.education = 'Required.';
+    if (!data.occupation) errors.occupation = 'Required.';
+    if (!data.income) errors.income = 'Required.';
+    if (!data.employmentStatus) errors.employmentStatus = 'Required.';
+    return errors;
+  };
+
+  // Error state for each step
+  const [stepErrors, setStepErrors] = useState<any>({});
+  // Validate and update errors on every change
+  const handleStepChange = (section: keyof FormData, data: any) => {
+    updateFormData(section, data);
+    let errors = {};
+    if (section === 'personalInfo') errors = validatePersonalInfo({ ...formData.personalInfo, ...data });
+    if (section === 'religiousInfo') errors = validateReligiousInfo({ ...formData.religiousInfo, ...data });
+    if (section === 'familyBackground') errors = validateFamilyBackground({ ...formData.familyBackground, ...data });
+    if (section === 'careerEducation') errors = validateCareerEducation({ ...formData.careerEducation, ...data });
+    setStepErrors(errors);
+    // Remove error display if all errors are gone
+    if (Object.keys(errors).length === 0) setShowErrors(false);
   };
 
   const handleNext = () => {
-    let valid = true;
-    if (currentStep === 1 && !validatePersonalInfo(formData.personalInfo)) {
-      valid = false;
-    }
-    if (currentStep === 2 && !validateReligiousInfo(formData.religiousInfo)) {
-      toast.error('All fields are required.');
-      valid = false;
-    }
-    if (currentStep === 3 && !validateFamilyBackground(formData.familyBackground)) {
-      toast.error('All fields are required.');
-      valid = false;
-    }
-    setShowErrors(!valid);
-    if (valid && currentStep < totalSteps) {
+    let errors = {};
+    if (currentStep === 1) errors = validatePersonalInfo(formData.personalInfo);
+    if (currentStep === 2) errors = validateReligiousInfo(formData.religiousInfo);
+    if (currentStep === 3) errors = validateFamilyBackground(formData.familyBackground);
+    setStepErrors(errors);
+    setShowErrors(Object.keys(errors).length > 0);
+    if (Object.keys(errors).length === 0 && currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
       setShowErrors(false);
+      setStepErrors({});
     }
   };
 
@@ -179,28 +192,36 @@ export const ProfileCompletion: React.FC = () => {
   };
 
   const handleCompleteProfile = async () => {
-    let valid = true;
-    if (!validatePersonalInfo(formData.personalInfo)) {
+    let errors = validatePersonalInfo(formData.personalInfo);
+    if (Object.keys(errors).length > 0) {
       setCurrentStep(1);
-      valid = false;
+      setShowErrors(true);
+      setStepErrors(errors);
+      return;
     }
-    if (!validateReligiousInfo(formData.religiousInfo)) {
-      toast.error('All fields are required.');
+    errors = validateReligiousInfo(formData.religiousInfo);
+    if (Object.keys(errors).length > 0) {
       setCurrentStep(2);
-      valid = false;
+      setShowErrors(true);
+      setStepErrors(errors);
+      return;
     }
-    if (!validateFamilyBackground(formData.familyBackground)) {
-      toast.error('All fields are required.');
+    errors = validateFamilyBackground(formData.familyBackground);
+    if (Object.keys(errors).length > 0) {
       setCurrentStep(3);
-      valid = false;
+      setShowErrors(true);
+      setStepErrors(errors);
+      return;
     }
-    if (!validateCareerEducation(formData.careerEducation)) {
-      toast.error('All fields are required.');
+    errors = validateCareerEducation(formData.careerEducation);
+    if (Object.keys(errors).length > 0) {
       setCurrentStep(4);
-      valid = false;
+      setShowErrors(true);
+      setStepErrors(errors);
+      return;
     }
-    setShowErrors(!valid);
-    if (!valid) return;
+    setShowErrors(false);
+    setStepErrors({});
     const user = auth.currentUser;
     if (!user) {
       toast.error('No authenticated user found.');
@@ -229,32 +250,36 @@ export const ProfileCompletion: React.FC = () => {
         return (
           <PersonalInfoStep
             data={formData.personalInfo}
-            onChange={(data) => updateFormData('personalInfo', data)}
+            onChange={(data) => handleStepChange('personalInfo', data)}
             showErrors={showErrors}
+            errors={stepErrors}
           />
         );
       case 2:
         return (
           <ReligiousInfoStep
             data={formData.religiousInfo}
-            onChange={(data) => updateFormData('religiousInfo', data)}
+            onChange={(data) => handleStepChange('religiousInfo', data)}
             showErrors={showErrors}
+            errors={stepErrors}
           />
         );
       case 3:
         return (
           <FamilyBackgroundStep
             data={formData.familyBackground}
-            onChange={(data) => updateFormData('familyBackground', data)}
+            onChange={(data) => handleStepChange('familyBackground', data)}
             showErrors={showErrors}
+            errors={stepErrors}
           />
         );
       case 4:
         return (
           <CareerEducationStep
             data={formData.careerEducation}
-            onChange={(data) => updateFormData('careerEducation', data)}
+            onChange={(data) => handleStepChange('careerEducation', data)}
             showErrors={showErrors}
+            errors={stepErrors}
           />
         );
       default:
@@ -265,11 +290,14 @@ export const ProfileCompletion: React.FC = () => {
   return (
     <div className="min-h-screen bg-pink-50 py-6 px-2 sm:px-4 md:py-8">
       <div className="w-full max-w-lg sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-[48%] mx-auto bg-white rounded-lg shadow-sm p-4 sm:p-6 md:p-8">
-        <h1 className="text-lg sm:text-xl font-bold text-center text-gray-900 mb-4">
-          Complete Your Profile
-        </h1>
 
-        <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
+
+        <div className="flex flex-row items-center justify-between w-full mb-4 gap-2">
+          <h1 className="text-lg sm:text-xl font-bold text-gray-900 mb-0">Complete Your Profile</h1>
+          <div className="flex items-center justify-end w-auto">
+            <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
+          </div>
+        </div>
         <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
 
         <TabNavigation
@@ -279,11 +307,11 @@ export const ProfileCompletion: React.FC = () => {
 
         {renderCurrentStep()}
 
-        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mt-8 gap-3">
+  <div className="flex flex-row justify-between items-center mt-8 gap-3">
           <button
             onClick={handlePrevious}
             disabled={currentStep === 1 || creatingProfile}
-            className={`flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-colors w-full sm:w-auto ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors w-full sm:w-auto ${
               currentStep === 1 || creatingProfile
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -305,9 +333,8 @@ export const ProfileCompletion: React.FC = () => {
             {creatingProfile
               ? 'Creating profile...'
               : currentStep === totalSteps
-                ? 'Complete Profile'
-                : 'Next'}
-            <ChevronRight size={16} />
+                ? (<><Check size={18} className="mr-2" /><span>Complete Profile</span></>)
+                : (<><span>Next</span> <ChevronRight size={16} /></>)}
           </button>
         </div>
       </div>

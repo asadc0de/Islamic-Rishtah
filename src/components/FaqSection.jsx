@@ -6,67 +6,67 @@ const faqData = [
   {
     id: 1,
     question: "What is WIFELIKE?",
-    answer: "WIFELIKE is an Islamic matrimonial platform designed to help Muslim singles find compatible partners while adhering to Islamic principles and values. We facilitate meaningful connections through a guardian-supervised process."
+    answer: "WIFE4LIFE is an Islamic matrimonial platform dedicated to helping practicing Muslims find their life partners in alignment with Islamic principles. Our focus is on upholding Islamic values, encouraging family involvement, and ensuring guardian supervision in all interactions."
   },
   {
     id: 2,
     question: "Who can join WIFELIKE?",
-    answer: "WIFELIKE is open to practicing Muslim singles who are serious about marriage and committed to following Islamic guidelines. Both men and women aged 18 and above can join with proper guardian involvement."
+    answer: "Practicing Sunni Muslims who are serious about marriage in line with Islamic principles are welcome. We embrace both reverts and those born into the faith, as long as they are dedicated to upholding Islamic values."
   },
   {
     id: 3,
     question: "How does guardian (Wali) involvement work?",
-    answer: "In accordance with Islamic tradition, all interactions are supervised by guardians (Wali). Your guardian will be involved in the matching process and must approve any potential connections before communication begins."
+    answer: "The Wali can communicate with the third-party Wali by making a respectful introduction."
   },
   {
     id: 4,
     question: "How do I create a profile?",
-    answer: "Creating a profile is simple: register with your basic information, provide guardian details, upload appropriate photos, complete your personal and religious preferences, and wait for profile verification."
+    answer: "Click Sign Up and fill out our comprehensive Islamic-focused form. You’ll need to provide personal details, Islamic background, guardian information, and your expectations for marriage."
   },
   {
     id: 5,
     question: "Why do I need guardian information?",
-    answer: "Guardian information is required to maintain Islamic principles and ensure all interactions are conducted properly. Guardians play a crucial role in the Islamic marriage process and help ensure serious intentions."
+    answer: "Islamic marriage requires guardian (wali) involvement, especially for women. This ensures proper Islamic procedures are followed and maintains the dignity and protection that Islam provides in the marriage process."
   },
   {
     id: 6,
     question: "How long does profile approval take?",
-    answer: "Profile approval typically takes 24-48 hours. Our team reviews all profiles to ensure they meet our community standards and Islamic guidelines. You'll be notified via email once approved."
+    answer: "Profile approval usually takes 24–48 hours. We manually review each profile to ensure authenticity and sincerity in line with Islamic values. Payment is required before your profile becomes visible to other members and before you can reach out to their respective wali."
   },
   {
     id: 7,
     question: "How do I contact someone I'm interested in?",
-    answer: "All initial contact must go through guardians. When you're interested in someone, we facilitate the connection between guardians first, who then coordinate further communication according to Islamic principles."
+    answer: "All communication is conducted through guardians. If you find a profile that interests you, click Contact Guardian to obtain the guardian’s contact information. The guardian will facilitate a proper Islamic introduction and communication. You must have created a profile and account before reaching out to a wali."
   },
   {
     id: 8,
     question: "Can I talk directly to potential matches?",
-    answer: "Direct communication is only permitted after both guardians approve and proper Islamic protocols are followed. All conversations should be conducted with the knowledge and presence of guardians."
+    answer: "Direct communication between non-mahram without guardian supervision is not permitted to maintain Islamic guidelines. All initial contact and arrangements are made through guardians to ensure proper Islamic conduct."
   },
   {
     id: 9,
     question: "What if I don't have a guardian?",
-    answer: "If you don't have a natural guardian (father/brother), the local Islamic community, mosque imam, or Islamic center can help provide guidance and supervision in accordance with Islamic principles."
+    answer: "If you don’t have a natural guardian, you can appoint a trusted Islamic scholar, imam, or righteous male relative. We can also help connect you with community leaders who can serve as guardians."
   },
   {
     id: 10,
     question: "What behavior is not allowed?",
-    answer: "We strictly prohibit inappropriate conversations, sharing personal contact information without guardian approval, requesting private meetings, and any behavior that contradicts Islamic values and principles."
+    answer: "Prohibited: Non-Islamic behavior, inappropriate messages, bypassing guardian involvement, false information, non-serious intentions, requesting photos before proper introduction, and any conduct that violates Islamic principles."
   },
   {
     id: 11,
     question: "What happens if Islamic guidelines are violated?",
-    answer: "Violations of Islamic guidelines result in immediate warnings, temporary suspension, or permanent account termination depending on the severity. We maintain a zero-tolerance policy for inappropriate behavior."
+    answer: "Profiles violating Islamic guidelines will be immediately suspended or permanently banned. We take Islamic compliance very seriously and have zero tolerance for inappropriate behavior."
   },
   {
     id: 12,
     question: "How much does WIFELIKE cost?",
-    answer: "We offer various membership plans starting from $29.99/month for basic features, with premium plans at $49.99/month including enhanced matching and priority support. Annual subscriptions receive significant discounts."
+    answer: "Each member pays a fee of £50 to create and list their profile on our website, which also allows you to view the contact details of other members. This fee ensures that all profiles represent real individuals, and there are no additional charges beyond this initial amount."
   },
   {
     id: 13,
     question: "Is there a refund policy?",
-    answer: "Yes, we offer a 30-day money-back guarantee for all new subscriptions. Refunds are processed within 5-7 business days. Certain conditions apply for partial refunds on annual plans."
+    answer: "No refunds are provided once payment is made and profile is activated. This policy ensures commitment and prevents misuse. Please ensure you understand this before making payment."
   },
   {
     id: 14,
@@ -81,7 +81,17 @@ const faqData = [
   {
     id: 16,
     question: "Online Istishar Service",
-    answer: "Our Online Istishar (consultation) service connects you with qualified Islamic counselors and scholars who can provide guidance on marriage-related questions, compatibility concerns, and religious matters."
+    answer: "Our Online Istishar (consultation) service connects you with qualified Islamic counselors and scholars who can provide guidance on marriage-related questions, compatibility concerns, and religious matters. Please note that the only payment method we accept is PayPal."
+  },
+  {
+    id: 17,
+    question: "How can I get help?",
+    answer: "For assistance, please contact us at <a class='text-red-600' href='mailto:wife4life@mail.co.uk'>wife4life@mail.co.uk</a>. We’re here to help with profile setup, technical issues, payment problems, and general platform questions. Our typical response time is 24–48 hours."
+  },
+  {
+    id: 18,
+    question: "Online Nikah Service",
+    answer: "We may be able to offer an online Nikah service, depending on availability. For more information, please email us at wife4life@mail.co.uk."
   }
 ];
 
@@ -99,6 +109,7 @@ const FAQ = () => {
   };
 
   return (
+    <>
     <div id='faq' className="min-h-screen bg-gradient-to-br from-red-50 to-pink-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
@@ -125,23 +136,22 @@ const FAQ = () => {
                   }`}
                 />
               </button>
-              
-              <div 
-                className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                  openItems.has(item.id) ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-                }`}
-              >
-                <div className="px-4 py-3 bg-gray-50">
-                  <p className="text-gray-700 text-sm leading-relaxed">
-                    {item.answer}
-                  </p>
+              {openItems.has(item.id) && (
+                <div className="px-4 py-3 text-gray-700 bg-gray-50 border-t">
+                  {/* Render HTML if answer contains HTML, else render as text */}
+                  {/<[a-z][\s\S]*>/i.test(item.answer) ? (
+                    <span dangerouslySetInnerHTML={{ __html: item.answer }} />
+                  ) : (
+                    <span>{item.answer}</span>
+                  )}
                 </div>
-              </div>
+              )}
             </div>
           ))}
         </div>
       </div>
     </div>
+    </>
   );
 };
 

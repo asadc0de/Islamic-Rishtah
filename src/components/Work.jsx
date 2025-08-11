@@ -54,19 +54,19 @@ const Work = () => {
           {/* Video Thumbnails */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 px-6">
             {/* Video 1 */}
-           <div className="relative bg-gray-900 rounded-lg overflow-hidden aspect-video">
-              <video src="./images/video1.mp4" controls></video>
-            </div>
+ <div className="relative bg-gray-900 rounded-lg overflow-hidden aspect-video">
+    <video src="./images/1.mp4" controls></video>
+  </div>
 
-            {/* Video 2 */}
-          <div className="relative bg-gray-900 rounded-lg overflow-hidden aspect-video">
-              <video src="./images/video2.mp4" controls></video>
-            </div>
+  {/* Video 2 */}
+<div className="relative bg-gray-900 rounded-lg overflow-hidden aspect-video">
+    <video src="./images/2.mp4" controls></video>
+  </div>
 
-            {/* Video 3 */}
-            <div className="relative bg-gray-900 rounded-lg overflow-hidden aspect-video">
-              <video src="./images/video3.mp4" controls></video>
-            </div>
+  {/* Video 3 */}
+  <div className="relative bg-gray-900 rounded-lg overflow-hidden aspect-video">
+    <video src="./images/3.mp4" controls></video>
+  </div>
           </div>
         
 
